@@ -1,0 +1,63 @@
+{% extends "template.html" %}
+{% block body %}
+<div data-role="page" id="page_THS">
+	<div data-role="header" style="text-align: center;">
+		<a href="/" data-icon="carat-l" data-role="button" data-ajax="false">돌아가기</a>
+		<h1>{{ config.TITLE }}</h1>
+		<a href="#" data-icon="bars" data-role="button" data-iconpos="right"
+			onclick="$('#panel_menu').panel('toggle');">메뉴</a>  
+	</div><!-- /header -->
+	
+	<div id="panel_menu" class="panel_menu" data-position="right" data-role="panel" data-display="overlay" data-theme="a">
+		<ul data-role="listview" data-corners="false" data-shadow="true" style="margin-top : 43px;">
+			<li data-icon="false">
+				<a href="/administrator" data-ajax="false">기본 설정</a>
+			</li>
+			<li id="menu_user" data-role="collapsible" data-collapsed-icon="carat-d" data-expanded-icon="carat-u" data-inset="false" data-iconpos="right">
+			 	<h3 id="menu_user_toggle" href="#" data-ajax="false">사용자</h3>
+			 	<ul id="menu_user_list" data-role="listview">
+			 		<li data-icon="false"><a href="/administrator/user/edit" data-ajax="false" >- 편집</a></li>
+			 		<li data-icon="false"><a href="/administrator/user/new" data-ajax="false" >- 신규 등록</a></li>
+			 	</ul>
+			</li>
+			<li data-icon="false">
+				<a href="/administrator/etc" data-ajax="false">기타</a>
+			</li>
+		</ul>
+	</div>
+	
+	<div class="ui-content">
+	{% if isSuper %}
+		{% block content %}
+		{% endblock %}
+	{% else %}
+		<div align="center" style="margin-top : 5em; margin-bottom: 5em;" class="ui-content">
+			<p>최고 관리자만 사용할 수 있습니다.</p>
+			<a href="/user/login" data-ajax="false">로그인</a>
+		</div>
+	{% endif %}
+	</div>
+	<div data-role="footer">
+		<h4 style="text-align: center;">Tiny Home Storage <a href="HTTP://SONIEN.NET" target="_blank">HTTP://SONIEN.NET</a></h4>
+	</div><!-- /footer -->
+	
+	<script type="text/javascript">
+		$("#menu_user_toggle").click(function(event) {
+			// var menu	= $("#menu_user");
+			var target 	= $("#menu_user_list");
+			if(target.css("display") == "none") {
+				// menu.button("option", "icon", "carat-u");
+				target.show();
+			} 
+			else {
+				// menu.button("option", "icon", "carat-d");
+				target.hide();
+			}
+			
+			return false;
+		});
+		
+		$("#menu_user_list").hide();
+	</script>
+</div>
+{% endblock %}

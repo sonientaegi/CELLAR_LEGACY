@@ -1,0 +1,77 @@
+<form class="align_center_flow_vertical" method="post" action="/administrator/user/new" data-ajax="false">{% csrf_token %}
+	<input name="user_create" value="true" type="hidden" />
+	<table>
+		{% if isSuper %} 
+		<tr>
+			<td style="padding-right : 1em;">그룹유저</td>
+			<td>
+				<label>
+		   		<input id="is_group" name="is_group" type="checkbox" data-mini="true" value="is_group" {% if user_create.is_group %} checked="checked" {% endif %}>설정
+		   		</label>
+   			</td>
+   		</tr>
+		{% endif %}
+		<tr>
+			<td>
+				아이디
+			</td>
+			<td>
+				<input id="username" name="username" type="text" size="30" value="{{ user_create.username | default:'' }}" />
+			</td>
+		</tr>
+		<tr>
+			<td>
+				암호
+			</td>
+			<td>
+				<input id="password" name="password" type="password" size="30" required="required"/>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				이메일
+			</td>
+			<td>
+				<input id="email" name="email" type="email" value="{{ user_create.email | default:'' }}" {% if not isSuper %} required="required" {% endif %} />
+			</td>
+		</tr>
+		<tr>
+			<td>
+				이름
+			</td>
+			<td>
+				<input id="first_name" name="first_name" type="text" size="30" value="{{ user_create.first_name | default:'' }}" />
+			</td>
+		</tr>
+		<tr>
+			<td>
+				소개
+			</td>
+			<td>
+				<textarea id="memo" name="memo" rows="5">{{ user_create.memo | default:"" }}</textarea>
+			</td>
+		</tr>
+	</table>
+	<div>{{ user_create.message | default:"" }}</div>
+	<div><input type="submit" value="회원가입" /></div>
+</form>
+
+<script>
+{% if isSuper %}
+$("#is_group").on("click", function() {
+	var is_group = $("#is_group");
+	var username = $("#username");
+	var username_value = username.val(); 
+	if(is_group.prop("checked")) {
+		if(username_value == "" || username_value[0] != "@") {
+			username.val("@" + username.val());
+		}
+	}
+	else {
+		if(username_value != "" && username_value[0] == "@") {
+			username.val(username_value.slice(1));
+		}
+	}
+});
+{% endif %}
+</script>

@@ -1,0 +1,70 @@
+{% extends "template.html" %} 
+
+{% block body %}
+<div data-role="page" id="page_THS">
+	<div data-role="header" style="text-align: center;">
+		<a data-role="button" data-icon="back" data-rel="back" class="ui-btn ui-corner-all">돌아가기</a>
+		<h1>{{ config.TITLE }}</h1>  
+	</div><!-- /header -->
+	
+	<div class="articles">
+		<div class="ui-body ui-body-a ui-corner-all">
+			<h3>CELLAR</h3>
+			<p>
+				<p align="right" style="margin-bottom : 1em;">
+					<a href="https://ths.sonien.net" target="_blank"><img src="/templates/CELLAR_BANNER.jpg"></a>
+				</p>
+				CELLAR <span style="font-size: 50%">TINY WEB STORAGE</span> 는 GPL v2 를 따릅니다. 
+				따라서 누구나 법에서 제한하는 행위를 제외하고는, 자유로이 사용, 수정, 재 배포를 할 수 있습니다. 
+				자세한 사항은 <a href="http://www.gnu.org/philosophy/philosophy.html" target="_blank">여기</a>를 참조하여 주십시오.<BR><BR>
+				
+				
+				CELLAR 를 사용함에 있어 발생하는 문제에 대해 제작자는 책임을 지지 않습니다.
+				프로그램 사용에 관한 문의 및 건의 사항은...
+				<table style="border: none; margin : 0.5em">
+				<tr><td>E-MAIL</td><td>SonienTaegi@gmail.com</td></tr>
+				<tr><td>웹 페이지</td><td><a href="HTTP://CELLAR.SONIEN.NET" target="_blank">HTTP://CELLAR.SONIEN.NET</a></td></tr>
+				<tr><td>github</td><td><a href="https://github.com/SonienTaegi/CELLAR/" target="_blank">https://github.com/SonienTaegi/CELLAR</a></td></tr>
+				</table>
+				으로 주시면 감사하겠습니다.
+				<br><br>
+				<font style="font-size : 80%">* 퇴근 후에도 항상 코딩한다고 놀아주지도 않는 남편을 응원해주는 살고미님께 감사를 바칩니다.</font>
+			</p>
+		</div>
+
+		<div class="ui-body ui-body-a ui-corner-all">
+			<h3>PLUPLOAD</h3>
+			<p>
+				<p align="right" style="margin : 0px;">
+					<a href="https://ths.sonien.net" target="_blank"><img src="/templates/CELLAR_BANNER.jpg"></a>
+				</p>
+				CELLAR <span style="font-size: 50%">TINY WEB STORAGE</span> 는 GPL v2 를 따릅니다. 
+				따라서 누구나 법에서 제한하는 행위를 제외하고는, 자유로이 사용, 수정, 재 배포를 할 수 있습니다. 
+				CELLAR 를 사용함에 있어 발생하는 문제에 대해 제작자는 책임을 지지 않습니다.
+				프로그램 사용에 관한 문의 및 건의 사항은...
+				<table style="border: none; margin : 0.5em">
+				<tr><td>E-MAIL</td><td>SonienTaegi@gmail.com</td></tr>
+				<tr><td>웹 페이지</td><td><a href="HTTP://CELLAR.SONIEN.NET" target="_blank">HTTP://CELLAR.SONIEN.NET</a></td></tr>
+				<tr><td>github</td><td><a href="https://github.com/SonienTaegi/CELLAR/" target="_blank">https://github.com/SonienTaegi/CELLAR</a></td></tr>
+				</table>
+				으로 주시면 감사하겠습니다. 
+			</p>
+		</div>
+			  		
+		<div class="ui-body ui-body-a ui-corner-all">
+			<h3>jQuery 와 jQuery mobile</h3>
+			<p>
+				<p align="right" style="margin-bottom : 1em;">
+					<a href="https://jquery.org" target="_blank"><img src="/templates/jquery.png"></a>
+				</p>
+				jQuery 와 jQuery mobile 은 jQuery foundation 에서 
+				MIT license 및 CC0 의 형태로 제공 및 배포되고 있습니다. 자세한 사항은 jQuery foundation 의 
+				<a href="https://jquery.org/license/" target="_blank">저작권 정보</a>를 참조하십시오.
+			</p>
+		</div>
+	</div>
+	<div data-role="footer">
+		<h5 style="text-align: center;"><a href="HTTP://CELLAR.SONIEN.NET" target="_blank">Powered by CELLAR</a></h5>
+	</div><!-- /footer -->
+</div><!-- /page -->
+{% endblock %}

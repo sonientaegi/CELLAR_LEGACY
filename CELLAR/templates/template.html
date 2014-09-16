@@ -1,0 +1,167 @@
+{% if not is_ajax %}
+<!doctype html>
+<html>
+<head>
+    <title>CELLAR</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <link rel="stylesheet" href="/libs/jquery.mobile/jquery.mobile-1.4.2.css">
+    <link rel="stylesheet" href="/libs/contextMenu/jquery.contextMenu.css">
+    <link rel="stylesheet" href="/templates/style.css">
+    {% block head %}
+	{% endblock %}
+	
+	<script src="/libs/jquery-1.11.1.js"></script>
+	<script src="/libs/jquery.mobile/jquery.mobile-1.4.2.js"></script>
+	<script src="/libs/jquery.ui/jquery-ui.js"></script>
+	<script src="/libs/pxem.jQuery.js"></script>
+	<script src="/libs/SonienTaegi.js"></script>
+	<script src="/libs/SonienTaegi.jquerymobile.js"></script>
+	<script src="/templates/common.js"></script>
+	<script src="/templates/setting.js"></script>
+	
+	<!-- Context Menu plug-in -->
+	<script src="/libs/contextMenu/jquery.contextMenu.js"></script>
+	<script src="/libs/contextMenu/jquery.ui.position.js"></script>
+</head>
+<body>
+
+<!-- 공통 UI 영역 -->
+<div id="popup">
+	<!-- 확인 팝업 시작-->
+	<div data-role="popup" id="popupYesNo" data-overlay-theme="a" data-theme="a" data-dismissible="false" style="max-width:500px;">
+	    <div data-role="header" data-theme="a" role="banner" class="ui-header ui-bar-a">
+	    <h1 id="popupYesNo_header" class="ui-title" role="heading">popupYesNo_header</h1>
+	    </div>
+	    <div role="main" class="ui-content">
+	        <h3 class="ui-title" id="popupYesNo_title">popupYesNo title</h3>
+	    	<p id="popupYesNo_detail">popupYesNo detail</p>
+	    	<div align="center">
+	    	<a href="#" class="ui-btn ui-corner-all ui-shadow ui-btn-inline" data-rel="back">아니오</a>
+	        <a href="#" class="ui-btn ui-corner-all ui-shadow ui-btn-inline" data-rel="back" data-transition="flow">예</a>
+	    	</div>
+	    </div>
+	</div>
+	<script type="text/javascript">
+	var popupYesNo = {
+		_instance 		: $("#popupYesNo"),
+		_header			: $("#popupYesNo_header"),
+		_title			: $("#popupYesNo_title"),
+		_detail			: $("#popupYesNo_detail"),
+		_callbackYes	: null,
+		_callbackNo		: null,
+		_click			: function(isYes) {
+			if(isYes) {
+				console.log("popupYesNo click Yes");
+				if(popupYesNo._callbackYes)	{ 
+					popupYesNo._callbackYes(); 
+				}
+			}
+			else {
+				console.log("popupYesNo click No");
+				if(popupYesNo._callbackNo) {
+					popupYesNo._callbackNo();
+				}
+			}
+		},
+		
+		modal			: function(header, title, detail, cbYes, cbNo) {
+			popupYesNo._header.text(header 	|| "팝업창");
+			popupYesNo._title.text(title 	|| "확인이 필요");
+			popupYesNo._detail.text(detail 	|| "그러니까 팝업");
+			popupYesNo._callbackYes	= cbYes || null;
+			popupYesNo._callbackNo	= cbNo	|| null;
+			popupYesNo._instance.popup("open");
+		}
+	};
+	(function() {
+		var button 	= popupYesNo._instance.find("a");
+		var no 		= button.first();
+		var yes		= button.next();
+		yes.css("width", no.css("width"));
+		no.click(function() { popupYesNo._click(false) });
+		yes.click(function() { popupYesNo._click(true) });
+		
+		popupYesNo._instance.popup({
+			theme			: "a",
+			overlayTheme	: "a",
+			positionTo		: "window",
+			dismissible		: false,
+			transition		: "pop"
+		});
+	})();
+	</script>
+	<!-- 확인 팝업 완료 -->
+	
+	<!-- 디렉토리 편집 팝업 시작 -->
+	<div data-role="popup" id="popupFormText" style="max-width:500px;">
+		<form id="popupFormText_form">
+		    <div data-role="header" data-theme="a" role="banner" class="ui-header ui-bar-a">
+		    	<h1 id="popupFormText_header" class="ui-title" role="heading">popupFormText_header</h1>
+		    </div>
+		    <div role="main" class="ui-content">
+		        <h3 id="popupFormText_title" class="ui-title">popupFormText_title</h3>
+		    	<input id="popupFormText_name" name="popupFormText_name" type="text"  placeholder="popupFormText_name" data-theme="a">
+				<div align="center">
+					<button type="submit" class="ui-btn ui-corner-all ui-shadow ui-btn-icon-left ui-icon-check ui-btn-inline">Submit</button>
+				</div>
+		    </div>
+		</form>
+	</div>
+	<script type="text/javascript">
+	var popupFormText = {
+		_instance 		: $("#popupFormText"),
+		_form			: $("#popupFormText_form"),
+		_header			: $("#popupFormText_header"),
+		_title			: $("#popupFormText_title"),
+		_name			: $("#popupFormText_name"),
+		_onSubmit		: null,
+		modal			: function(cbSubmit, isEditing, originName) {
+			var mode 	= isEditing ? 1 : 0;
+			var header 	= ["새로 만들기", "이름 변경"];
+			var title	= ["이름을 입력하세요", "이름을 입력하세요"];
+			var placeholder = ["찌르레기", originName || ""];
+			
+			popupFormText._header.text(header[mode]);
+			popupFormText._title.text(title[mode]);
+			popupFormText._name.val(mode == 0 ? "" : originName);
+			popupFormText._name.attr("placeholder", placeholder[mode]);
+			popupFormText._onSubmit = cbSubmit;
+			popupFormText._instance.popup("open");
+		}
+	};
+	(function() {		
+		popupFormText._instance.popup({
+			theme			: "a",
+			overlayTheme	: "a",
+			positionTo		: "window",
+			dismissible		: true,
+			transition		: "pop"
+		});
+		
+		popupFormText._form.bind("submit", function(event) {
+			popupFormText._onSubmit(popupFormText._name.val());
+			event.preventDefault();
+			popupFormText._instance.popup("close");
+			
+			return false;
+		});
+	})();
+	</script>
+	<!-- 새 디렉토리 만들기 팝업 완료 -->
+</div>
+<!-- 공통 UI 영역 -->
+
+{% endif %}
+
+<script type="text/javascript">
+var crsf_token = "{{csrf_token}}";
+</script>
+
+{% block body %}
+{% endblock %}
+
+{% if not is_ajax %}
+</body>
+</html>
+{% endif %}

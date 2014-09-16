@@ -1,0 +1,7 @@
+{% extends "administrator.html" %}
+{% block content %}	
+<div style="width: 50%; margin-left: auto; margin-right: auto;" class="ui-body ui-body-a ui-corner-all">		
+	<h3 align="center">회원가입{% if isSuper %} : 관리자 모드{% endif %}</h3>
+	{% include "user_register_form.html" %}
+</div>
+{% endblock %}

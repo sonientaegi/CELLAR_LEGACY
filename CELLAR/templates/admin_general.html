@@ -1,0 +1,179 @@
+{% extends "administrator.html" %}
+{% block content %}		
+<p>* 저장 버튼을 눌러야 설정 변경 사항이 반영됩니다.
+<form id="form_admin" method="post" action="/administrator" data-ajax="false">{% csrf_token %}
+<input type="hidden" name="isSubmitted" value="1">
+<input type="hidden" name="pageYOffset" id="pageYOffset" value="{{pageYOffset}}">
+
+<h3 class="ui-bar ui-bar-a ui-corner-all">서비스 설정</h3>
+<div class="ui-body">
+	<div class="reflow_table_row">
+		<p>서비스 이름</p>
+	  	<input type="text" name="ths_title" value="{{config.TITLE}}">
+	</div>
+	
+	<div class="reflow_table_row">
+		<p>최상위 경로</p>
+	  	<input id="ths_root" type="text" name="ths_root" class="ths_root" value="{{config.ROOT}}">
+	  	<p>/</p>
+	</div>
+
+  	<div class="reflow_table_row">
+  		<p>게스트 HOME</p>
+  		<input type="text" class="ths_root ths_root_field" value="{{config.ROOT}}" readonly="readonly">
+  		<p>/</p>
+  		<input id="home_guest" type="text" name="home_guest" value="{{config.HOME_GUEST}}">
+  		<p id="guest_home_suffix">/</p>
+	</div>
+
+	<div class="reflow_table_row">
+  		<p>신규 회원 HOME</p>
+  		<input type="text" class="ths_root ths_root_field" value="{{config.ROOT}}" readonly="readonly">
+  		<p>/</p>
+  		<input id="home_user" type="text" name="home_user" value="{{config.HOME_USER}}">
+  		<p id="user_home_suffix">/</p>
+	</div>
+</div>
+
+<h3 class="ui-bar ui-bar-a ui-corner-all">권한 설정</h3>
+<div class="ui-body">
+	<div class="reflow_table_row">
+   		<p>게스트 계정</p>
+   		<label>
+   		<input type="checkbox" name="using_guest" id="using_guest" data-mini="true" value="true" {% if config.USING_GUEST %}checked="checked"{% endif %}>사용
+   		</label>
+   		<p>( 미사용 시 게스트 계정은 <b>게스트 HOME</b>의 파일만 조회 가능 )</p>
+	</div>
+	
+	<div class="reflow_table_row">
+   		<p>로그인 권장</p>
+   		<label>
+   		<input type="checkbox" name="suggest_login" id="suggest_login" data-mini="true" value="true" {% if config.SUGGEST_LOGIN %}checked="checked"{% endif %}>사용
+   		</label>
+	</div>
+	
+	<div class="reflow_table_row">
+		<p>기본 권한</p>
+		<fieldset class="ui-mini" data-role="controlgroup" data-type="horizontal" style="-webkit-box-flex: 1;">
+			<input type="checkbox" name="default_readable" 	id="default_readable"
+					{% if config.DEFAULT_AUTH_DIR_READABLE %}checked="checked"{% endif %}>
+			<label for="default_readable">읽기</label>
+			<input type="checkbox" name="default_writeable" id="default_writeable"
+					{% if config.DEFAULT_AUTH_DIR_WRITEABLE %}checked="checked"{% endif %}>
+			<label for="default_writeable">쓰기</label>
+			<input type="checkbox" name="default_deletable" id="default_deletable"
+					{% if config.DEFAULT_AUTH_DIR_DELETABLE %}checked="checked"{% endif %}>
+			<label for="default_deletable">삭제</label>
+			<input type="checkbox" name="default_inherit" 	id="default_inherit"
+					{% if config.DEFAULT_AUTH_DIR_INHERIT %}checked="checked"{% endif %}>
+			<label for="default_inherit">상속</label>
+		</fieldset>
+		<p>( 권한 미 지정 시 적용 됨 )</p>
+	</div>
+	
+	<div class="reflow_table_row">
+   		<p>권한 복구</p>
+   		<a id="auth_repair" href="#" class="ui-btn ui-btn-inline ui-mini ui-corner-all">실행</a>
+	</div>
+	
+	<div class="reflow_table_row">
+   		<p>권한 초기화</p>
+   		<a id="auth_reset" href="#" class="ui-btn ui-btn-inline ui-mini ui-corner-all">실행</a>
+	</div>
+</div>
+
+<div align="center">
+	<button type="submit" data-inline="true">저장</button>
+</div>
+</form>
+
+<script>
+$("#auth_repair").on("click", function(event) {
+	alert("준비 중입니다.");
+});
+
+$("#auth_reset").on("click", function(event) {
+	popupYesNo.modal(
+		"경고",
+		"모든 권한 관련 데이터가 삭제되며 복구가 불가능 합니다.",
+		"정말 초기화 하시겠습니까?",
+		function() { 
+			$.mobile.loading( "show", {
+		        text: "권한을 초기화 중입니다",
+		        textVisible: true,
+		        theme: "a",
+		        textonly: false,
+		        html: ""
+			});
+			
+			$.post(
+				"/auth/reset",
+				{ 
+					csrfmiddlewaretoken : '{{csrf_token}}', 
+				},
+				function(data, status) {
+					var jsonResponse = JSON.parse(data);			
+					
+					if(status != "success") {
+						console.log(status);
+					}
+					else if(jsonResponse['code'] < 0) {
+						console.log(jsonResponse['message']);
+					}
+					else {
+						console.log("권한이 초기화 되었습니다.");
+					}
+					$.mobile.loading( "hide" );
+				}
+			);
+		}
+	);
+});
+
+$("#ths_root").on("keyup", function(event) {
+	$(".ths_root_field").each( function() {
+		$(this).val($("#ths_root").val());	 
+	});
+});
+
+$("#home_guest").on("keyup", function(event) {
+	var suffix = $("#guest_home_suffix");
+	if($(this).val() != "") {
+		suffix.show();
+	}
+	else {
+		suffix.hide();
+	}
+});
+if($("#home_guest").val() == "")	{
+	$("#guest_home_suffix").hide();
+};
+
+$("#home_user").on("keyup", function(event) {
+	var suffix = $("#user_home_suffix");
+	if($(this).val() != "") {
+		suffix.show();
+	}
+	else {
+		suffix.hide();
+	}
+});
+if($("#home_user").val() == "")	{
+	$("#user_home_suffix").hide();
+};
+
+$("#form_admin").submit(function(event) {
+	$.mobile.loading("show", {
+		text : "저장 중...",
+		textVisible : true
+	});
+	$("#pageYOffset").val(window.pageYOffset);
+});
+
+window.onload = function() {
+	var pageYOffset = Number($("#pageYOffset").val()); 
+	$.mobile.silentScroll(pageYOffset);
+};
+</script>
+
+{% endblock %}

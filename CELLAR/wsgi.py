@@ -1,5 +1,5 @@
 """
-WSGI config for CELLAR project.
+WSGI config for THS project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -8,7 +8,7 @@ https://docs.djangoproject.com/en/1.6/howto/deployment/wsgi/
 """
 
 import os
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "CELLAR.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "THS.settings")
 
 from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()

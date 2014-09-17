@@ -127,6 +127,7 @@ th.cell-selectable:hover {
 	min-width: 150px;
 }
 
+/* Common Style */
 .articles {
 	margin-left : auto;
 	margin-right : auto;
@@ -140,6 +141,30 @@ th.cell-selectable:hover {
 
 .articles > div:first-child {
 	margin-top : 3em;
+}
+
+/* copyright.html */
+.license > .banner {
+	direction: rtl;
+	margin-right: 0.5em;
+}
+
+.license > .banner > a > div {
+	width : 200px; 
+	height : 50px; 
+	line-height : 50px; 
+	text-align: center;
+}
+
+.license > .banner > a > div > img {
+	vertical-align: middle;
+}
+
+.license > p {
+	margin-top : 0.5em;
+	margin-bottom : 0.5em;
+	text-align: justify;
+	line-height: 150%;
 }
 
 .panel_menu {

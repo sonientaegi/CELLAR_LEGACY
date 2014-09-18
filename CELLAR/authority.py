@@ -34,7 +34,7 @@ class Directory :
             예외 메시지
         """
     
-        index   = getDirIndex(fullPath)
+        index   = dir_get(fullPath)
         message = ""
         
         if index is None :
@@ -55,7 +55,7 @@ class Directory :
                 with transaction.atomic() :
                     descriptor = FileDescriptor(file = fullPath, reference_id = 0, **params)
                     descriptor.save()
-                    setDirIndex(fullPath, descriptor.id)
+                    dir_set(fullPath, descriptor.id)
                     index = descriptor.id
             except Exception as err :
                 log.error("Directory.set " + err.__str__())
@@ -87,10 +87,10 @@ class Directory :
         """
         Directory 권한 삭제
         """
-        index = getDirIndex(fullPath)
+        index = dir_get(fullPath)
         if index is None :
             return True
-        elif delDirIndex(fullPath):
+        elif dir_del(fullPath):
             FileDescriptor.objects.filter(id = index).delete()
             FileDescriptor.objects.filter(reference_id = index).delete()
             return True
@@ -112,7 +112,7 @@ class Directory :
         normFullPath = os.path.normpath(fullPath)
                 
         fileDescriptor  = None
-        index = getDirIndex(fullPath)
+        index = dir_get(fullPath)
              
         # 재귀적으로 권한 추출 시 사용자 홈 이상으로는 올라갈 수 없음.
         log.info("ROOT : " + userinfo.getUserHome())
@@ -192,7 +192,7 @@ class Directory :
 #             return True
 #         
 #         fileDescriptor  = None
-#         index = getDirIndex(fullPath)
+#         index = dir_get(fullPath)
 #             
 #         # 재귀적으로 권한 추출 시 사용자 홈 이상으로는 올라갈 수 없음.
 #         log.info("ROOT : " + userinfo.dir_home)

@@ -3,3 +3,4 @@
 *.ai
 CELLAR.sqlite3
 *.pyc
+/icon

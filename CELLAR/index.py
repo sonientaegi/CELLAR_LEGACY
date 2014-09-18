@@ -10,29 +10,29 @@ import os.path
 from CELLAR             import config
 from SonienStudio.log   import error, info, ok
 
-INDEX_FILE = ".CELLAR.index"
+INDEX_FILE = ".file_id.CELLAR"
 
 def dir_get(fullPath):
     """
-    Get index of fullPath. Will return None unless there is an index file.
+    Get file_id of index file in fullPath. Will return None unless there is an file_id file.
     """  
     try :
         file = open(os.path.normpath(fullPath + INDEX_FILE))
-        index = int(file.read())
+        file_id = int(file.read())
         file.close()
-        return index
+        return file_id
           
     except IOError as err:
         error("index.dir.get : " + err.__str__())
         return None
 
-def dir_set(fullPath, index):
+def dir_set(fullPath, file_id):
     """
-    Set or update index of fullPath. Will return False unless it is done successfully. 
+    Set or update file_id of index file in fullPath. Will return False unless it is done successfully. 
     """
     try :
         file = open(os.path.normpath(fullPath + INDEX_FILE), mode='w')
-        file.write(str(index))
+        file.write(str(file_id))
         file.close()
         return True
     

@@ -9,18 +9,18 @@
 <div class="ui-body">
 	<div class="reflow_table_row">
 		<p>서비스 이름</p>
-	  	<input type="text" name="ths_title" value="{{config.TITLE}}">
+	  	<input type="text" name="title" value="{{config.TITLE}}">
 	</div>
 	
 	<div class="reflow_table_row">
 		<p>최상위 경로</p>
-	  	<input id="ths_root" type="text" name="ths_root" class="ths_root" value="{{config.ROOT}}">
+	  	<input id="root" type="text" name="root" class="root" value="{{config.ROOT}}">
 	  	<p>/</p>
 	</div>
 
   	<div class="reflow_table_row">
   		<p>게스트 HOME</p>
-  		<input type="text" class="ths_root ths_root_field" value="{{config.ROOT}}" readonly="readonly">
+  		<input type="text" class="root root_field" value="{{config.ROOT}}" readonly="readonly">
   		<p>/</p>
   		<input id="home_guest" type="text" name="home_guest" value="{{config.HOME_GUEST}}">
   		<p id="guest_home_suffix">/</p>
@@ -28,7 +28,7 @@
 
 	<div class="reflow_table_row">
   		<p>신규 회원 HOME</p>
-  		<input type="text" class="ths_root ths_root_field" value="{{config.ROOT}}" readonly="readonly">
+  		<input type="text" class="root root_field" value="{{config.ROOT}}" readonly="readonly">
   		<p>/</p>
   		<input id="home_user" type="text" name="home_user" value="{{config.HOME_USER}}">
   		<p id="user_home_suffix">/</p>
@@ -48,7 +48,7 @@
 	<div class="reflow_table_row">
    		<p>로그인 권장</p>
    		<label>
-   		<input type="checkbox" name="suggest_login" id="suggest_login" data-mini="true" value="true" {% if config.SUGGEST_LOGIN %}checked="checked"{% endif %}>사용
+   		<input type="checkbox" name="login_campaign" id="login_campaign" data-mini="true" value="true" {% if config.LOGIN_CAMPAIGN %}checked="checked"{% endif %}>사용
    		</label>
 	</div>
 	
@@ -130,9 +130,9 @@ $("#auth_reset").on("click", function(event) {
 	);
 });
 
-$("#ths_root").on("keyup", function(event) {
-	$(".ths_root_field").each( function() {
-		$(this).val($("#ths_root").val());	 
+$("#root").on("keyup", function(event) {
+	$(".root_field").each( function() {
+		$(this).val($("#root").val());	 
 	});
 });
 

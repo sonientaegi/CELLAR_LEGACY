@@ -1,6 +1,6 @@
 {% extends "template.html" %}
 {% block body %}
-<div data-role="page" id="page_THS">
+<div data-role="page" id="page_CELLAR">
 	<div data-role="header" style="text-align: center;">
 		<a href="/" data-icon="carat-l" data-role="button" data-ajax="false">돌아가기</a>
 		<h1>{{ config.TITLE }}</h1>
@@ -38,7 +38,7 @@
 	{% endif %}
 	</div>
 	<div data-role="footer">
-		<h4 style="text-align: center;">Tiny Home Storage <a href="HTTP://SONIEN.NET" target="_blank">HTTP://SONIEN.NET</a></h4>
+		{% include "mod/footer.html" %}
 	</div><!-- /footer -->
 	
 	<script type="text/javascript">

@@ -9,16 +9,14 @@ admin.autodiscover()
 
 urlpatterns = patterns('', 
     url(r'^admin/'              , include(admin.site.urls)),
-    url(r'^copyright$'          , views.copyright), 
-#     
-#     
-#     
-#     
-#     url(r'^administrator$'              , views.administrator, name="administrator"),
+    
+    url(r'^$'                   , views.index, name="index"),
+    url(r'^copyright$'          , views.copyrightPage),
+    url(r'^administrator$'              , views.administrator, name="administrator"),
 #     url(r'^administrator/user/edit$'    , views.administrator_user_edit),
 #     url(r'^administrator/user/new$'     , views.administrator_user_new),
-#     
-#     url(r'^administrator/etc$'  , views.administrator_etc), 
+#     url(r'^administrator/etc$'  , views.administrator_etc),
+     
 #     url(r'^module/directree$'   , views.module_directree),
 #     url(r'^module/filelist$'    , views.module_filelist),
 #     url(r'^module/upload$'      , views.module_upload),
@@ -54,7 +52,6 @@ urlpatterns = patterns('',
 #     url(r'^user/update$'        , views.user_update), 
 #     url(r'^user/myinfo$'        , views.user_myinfo), 
 # 
-#     url(r'^$'                           , views.index, name="index"),
 # 
 #     url(r'^tarload/(?P<filename>.*)$'   , views.tarload),
 #     url(r'^tarload$'                    , views.tarload),

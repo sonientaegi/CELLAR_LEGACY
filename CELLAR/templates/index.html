@@ -1,12 +1,12 @@
 {% extends "template.html" %} 
 
 {% block body %}
-<div data-role="page" id="page_THS"><!-- class="ui-responsive-panel" -->
+<div data-role="page" id="page_CELLAR"><!-- class="ui-responsive-panel" -->
 	<div data-role="header" style="text-align: center;">
-		<a data-role="button" data-icon="grid" onclick="javascript:THS.toggleDirectory()" id="index_toggle_directory"
+		<a data-role="button" data-icon="grid" onclick="javascript:CELLAR.toggleDirectory()" id="index_toggle_directory"
 			class="ui-nodisc-icon ui-alt-icon ui-btn ui-icon-grid ui-btn-icon-notext ui-corner-all">폴더</a>
 		<h1>{{ config.TITLE }}</h1> 
-		<a data-role="button" data-icon="bars" onclick="javascript:THS.toggleMenu()" data-iconpos="right">메뉴</a> 
+		<a data-role="button" data-icon="bars" onclick="javascript:CELLAR.toggleMenu()" data-iconpos="right">메뉴</a> 
 	</div><!-- /header -->
 
 	<div id="panel_left" data-position="left" data-role="panel" data-display="push" data-theme="b">
@@ -39,9 +39,9 @@
 			{% if isSuper %}
 			<li data-icon="gear"><a href="/administrator" id="panel_right_setting" data-ajax="false">자료실 설정</a></li>
 			{% endif %}
-		    <li data-icon="edit"><a onclick="javascript:THS.popupCreateDir()" id="panel_right_newdir">새 폴더</a></li>
-			<li data-icon="arrow-u"><a onclick="javascript:THS.popupUpload()" id="panel_right_upload">업로드</a></li>
-			<li data-icon="arrow-d"><a onclick="javascript:THS.dump_cwd()">한꺼번에 다운</a></li>
+		    <li data-icon="edit"><a onclick="javascript:CELLAR.popupCreateDir()" id="panel_right_newdir">새 폴더</a></li>
+			<li data-icon="arrow-u"><a onclick="javascript:CELLAR.popupUpload()" id="panel_right_upload">업로드</a></li>
+			<li data-icon="arrow-d"><a onclick="javascript:CELLAR.dump_cwd()">한꺼번에 다운</a></li>
 		</ul>
 		
 		<div id="copyright" style="position: absolute; bottom: 10px; left: 10px; right: 10px;" class="align_center_flow_vertical">
@@ -49,20 +49,8 @@
   		</div>
 	</div>
 	
-	{% if not user.is_authenticated and config.SUGGEST_LOGIN %}
-	<table id="content_need_login" class="ui-content align_center" style="vertical-align: middle;">
-	<tr>
-		<td valign="middle"><H5>메뉴를 눌러 로그인 후 이용해주세요.</H5></td>
-		<td>&nbsp;</td>
-		<!-- <td valign="middle"><a id="close_need_login" href="#" class="ui-icon-delete ui-btn ui-shadow ui-corner-all ui-btn-icon-notext ui-mini">X</a></td> -->
-	<tr>
-	</table>
-	
-	<script type="text/javascript">
-		$("#close_need_login").on("click", function() {
-			$("#content_need_login").hide();
-		});
-	</script>
+	{% if not user.is_authenticated and config.LOGIN_CAMPAIGN %}
+		{% include 'mod/login_campaign.html' %}
 	{% endif %}
 
 	<div id="content_cwd" class="ui-content">
@@ -74,12 +62,12 @@
 	<div id="content_filelist" class="ui-content"></div>
 
 	<div data-role="footer">
-		<h4 style="text-align: center;">Powered by Tiny Home Storage <a href="HTTP://SONIEN.NET" target="_blank">HTTP://SONIEN.NET</a></h4>
+	{% include "mod/footer.html" %}
 	</div><!-- /footer -->
 </div><!-- /page -->
 
 <script type="text/javascript">
-var THS = {
+var CELLAR = {
 	cwd : "/",
 	
 	tarload : function(target) {
@@ -117,16 +105,16 @@ var THS = {
 				var node = Directree.instance.treeHelper("find", dir);
 				node.nodeHelper("expand", true);
 			}
-			THS.cwd = dir;
-			// $("#field_cwd").val(THS.cwd);
-			$("#field_cwd").text(THS.cwd);
+			CELLAR.cwd = dir;
+			// $("#field_cwd").val(CELLAR.cwd);
+			$("#field_cwd").text(CELLAR.cwd);
 			$.mobile.loading("hide");
 		});
 	},
 	
 	popupCreateDir : function() {
 		popupFormText.modal(function(newDirName) {
-			Transaction.createDir(THS.cwd, newDirName);	
+			Transaction.createDir(CELLAR.cwd, newDirName);	
 		});
 	},
 	
@@ -174,7 +162,7 @@ var THS = {
 		if(files.length == 0) {
 			return;
 		}
-		var baseDir	= THS.cwd;
+		var baseDir	= CELLAR.cwd;
 		params = 'csrfmiddlewaretoken=' + crsf_token;
 		params = params + '&baseDir=' + baseDir;
 		
@@ -188,7 +176,7 @@ var THS = {
 			}
 		}
 		
-		var filename = "THS.tar";
+		var filename = "CELLAR.tar";
 		var dirs = baseDir.split("/");
 		for(var i = dirs.length - 1; i >= 0; i--) {
 		    if(dirs[i] == "") continue;
@@ -205,7 +193,7 @@ var THS = {
 		if(Filelist.writeable) {
 			$("#panel_right_newdir").show();
 			$("#panel_right_upload").show();
-			// $("#panel_right_upload > #cwd").val(THS.cwd);
+			// $("#panel_right_upload > #cwd").val(CELLAR.cwd);
 		}
 		else {
 			$("#panel_right_newdir").hide();
@@ -215,10 +203,10 @@ var THS = {
 	
 	popupUpload : function() {
 		window.history.pushState({needRefresh : true} , "", "/module/upload");
-		THS.toggleMenu();
+		CELLAR.toggleMenu();
 		$( ":mobile-pagecontainer" ).pagecontainer("change", "/module/upload", { 
 			type		: "post",
-			data		: { cwd 				: THS.cwd, 
+			data		: { cwd 				: CELLAR.cwd, 
 							csrfmiddlewaretoken : '{{csrf_token}}' },
 			role		: "dialog",
 			transition	: "slidedown",
@@ -230,7 +218,7 @@ var THS = {
 //Bind to the navigate event
 $( window ).on( "navigate", function( event, data ) {
 	if(data.state.needRefresh) {
-		Filelist.browse(THS.cwd);
+		Filelist.browse(CELLAR.cwd);
 	}
 	window.history.pushState({needRefresh : false} , "", "/");
 	
@@ -239,22 +227,24 @@ $( window ).on( "navigate", function( event, data ) {
 	}
 });
 
+/*
 console.log("loading /module/filelist start.");
 $("#content_filelist").load("/module/filelist", function() {
-	Filelist.setOnClickDirectoryListener(THS.browse);
-	Filelist.setOnDragStartListener(THS.dragStart_filelist);
+	Filelist.setOnClickDirectoryListener(CELLAR.browse);
+	Filelist.setOnDragStartListener(CELLAR.dragStart_filelist);
 	console.log("loading /module/filelist completed.");
 });
 
 console.log("loading /module/directree start.");
 $("#content_directory").load("/module/directree", function() {
-	Directree.setOnClickDirectoryListener(THS.browse);
-	Directree.setOnDragStartListener(THS.dragStart_directree);
-	Directree.setOnDropListener(THS.drop_on_directree);
+	Directree.setOnClickDirectoryListener(CELLAR.browse);
+	Directree.setOnDragStartListener(CELLAR.dragStart_directree);
+	Directree.setOnDropListener(CELLAR.drop_on_directree);
 	console.log("loading /module/directree completed.");
 });
+*/
 
-$("#panel_right").on("panelbeforeopen", THS.onPanelUpdate);
+$("#panel_right").on("panelbeforeopen", CELLAR.onPanelUpdate);
 $("#panel_right").on("panelclose", function(event, ui) {
 	var windowWidth = $(window).width();	
 	if(windowWidth >= 800) {
@@ -292,7 +282,7 @@ $(window).on("throttledresize", function(event) {
 	console.log("너비 " + windowWidth);
 });
 
-$("#page_THS").on("pagecreate", function(event, ui) {
+$("#page_CELLAR").on("pagecreate", function(event, ui) {
 	$(window).trigger("throttledresize");
 	
 	/* Left Pannel ESC 키 닫기 방지 */

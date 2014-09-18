@@ -6,13 +6,12 @@ Created on 2014. 4. 27.
 """
 Index 페이지를 호출한다.
 """
-
-from builtins import Exception
+from builtins                   import Exception
 from datetime                   import datetime
 import json
 import os
 import re
-from subprocess import call
+from subprocess                 import call
 from wsgiref.util               import FileWrapper
 
 from django.contrib.auth        import authenticate
@@ -20,87 +19,88 @@ from django.contrib.auth.models import User
 from django.contrib.auth.views  import login, logout 
 from django.core.urlresolvers   import reverse
 from django.db                  import transaction
-from django.db.utils import IntegrityError
+from django.db.utils            import IntegrityError
 from django.http                import HttpResponse
 from django.http.response       import HttpResponseRedirect, StreamingHttpResponse, \
-    HttpResponseNotAllowed, HttpResponseServerError
+                                       HttpResponseNotAllowed, HttpResponseServerError
 from django.shortcuts           import render, redirect
 
-# from SonienStudio               import log
-# from SonienStudio.file          import FileManager
-# from SonienStudio.tarstream     import TarStream
-# from CELLAR                     import config, util_index
-# from CELLAR                     import util
-# from CELLAR.authority           import Directory
-# from CELLAR.models              import UserInfo, UserGroups, FileDescriptor, UserAuthority
-# from CELLAR.util                import CELLARFileManager
+from CELLAR                     import config, index
+from CELLAR                     import util
+from CELLAR.authority           import Directory
+from CELLAR.models              import UserInfo, UserGroups, FileDescriptor, UserAuthority
+from CELLAR.util                import CELLAR_FileManager
+from SonienStudio.file          import FileManager
+from SonienStudio.log           import error, info
+from SonienStudio.tarstream     import TarStream
 
-def copyright(request, *args, **kwrags):
+global config
+
+def copyrightPage(request, *args, **kwrags):
     return HttpResponse(render(request, "copyright.html"))
 
-# def index(request, *args, **kwargs):
-#     context = {
-#         "config"    : config,
-#         "isSuper"   : UserInfo.getUserInfo(request).isSuper()
-#     } 
-#     return HttpResponse(render(request, "index.html", context))
-# 
-# """
-# 관리자 페이지를 연다 
-# """
-# def administrator(request, *args, **kwargs):
-#     userinfo = UserInfo.getUserInfo(request)
-#     
-#     isSubmitted = request.POST.get("isSubmitted");
-#     pageYOffset = "0";
-#     
-#     if userinfo.isSuper() and isSubmitted :
-#         global config
-# #         config.setRoot(request.POST.get("ths_root"))
-# #         config.setHomeGuest(request.POST.get("guest_root"))
-# #         config.setHomeDefault(request.POST.get("user_root"))
-#         config.TITLE            = request.POST.get("ths_title")
-#         config.ROOT             = request.POST.get("ths_root")
-#         config.HOME_USER        = request.POST.get("home_user")
-#         config.HOME_GUEST       = request.POST.get("home_guest")
-#         config.USING_GUEST      = isChecked(request,"using_guest")
-#         config.SUGGEST_LOGIN    = isChecked(request,"suggest_login")
-#         
-#         config.DEFAULT_AUTH_DIR_READABLE    = isChecked(request,"default_readable") 
-#         config.DEFAULT_AUTH_DIR_WRITEABLE   = isChecked(request,"default_writeable")
-#         config.DEFAULT_AUTH_DIR_DELETABLE   = isChecked(request,"default_deletable")
-#         config.DEFAULT_AUTH_DIR_INHERIT     = isChecked(request,"default_inherit")
-#         
-#         config.save()
-#         
-#         pageYOffset = request.POST.get("pageYOffset")
-#         
-#         restart(userinfo)
-#     
-#     context = { 
-#            "config"         : vars(config), 
-#            "pageYOffset"    : pageYOffset,
-#            "isSuper"        : UserInfo.getUserInfo(request).isSuper()
-#         } 
-#     return HttpResponse(render(request, "admin_general.html", context ))
-# 
+def index(request, *args, **kwargs):
+    context = {
+        "config"    : config,
+        "isSuper"   : UserInfo.getUserInfo(request).isSuper()
+    } 
+    return HttpResponse(render(request, "index.html", context))
+
+"""
+관리자 페이지를 연다 
+"""
+def administrator(request, *args, **kwargs):
+    userinfo = UserInfo.getUserInfo(request)
+      
+    isSubmitted = request.POST.get("isSubmitted");
+    pageYOffset = "0";
+      
+    if userinfo.isSuper() and isSubmitted :
+#         config.setRoot(request.POST.get("ths_root"))
+#         config.setHomeGuest(request.POST.get("guest_root"))
+#         config.setHomeDefault(request.POST.get("user_root"))
+        config.TITLE            = request.POST.get("title")
+        config.ROOT             = request.POST.get("root")
+        config.HOME_USER        = request.POST.get("home_user")
+        config.HOME_GUEST       = request.POST.get("home_guest")
+        config.USING_GUEST      = isChecked(request,"using_guest")
+        config.LOGIN_CAMPAIGN   = isChecked(request,"login_campaign")
+          
+        config.DEFAULT_AUTH_DIR_READABLE    = isChecked(request,"default_readable") 
+        config.DEFAULT_AUTH_DIR_WRITEABLE   = isChecked(request,"default_writeable")
+        config.DEFAULT_AUTH_DIR_DELETABLE   = isChecked(request,"default_deletable")
+        config.DEFAULT_AUTH_DIR_INHERIT     = isChecked(request,"default_inherit")
+          
+        config.save()
+          
+        pageYOffset = request.POST.get("pageYOffset")
+          
+        restart(userinfo)
+      
+    context = { 
+           "config"         : vars(config), 
+           "pageYOffset"    : pageYOffset,
+           "isSuper"        : UserInfo.getUserInfo(request).isSuper()
+        } 
+    return HttpResponse(render(request, "admin_general.html", context ))
+ 
 # def administrator_user_edit(request, *args, **kwargs):
 #     user_group = { 'group' : [], 'user' : []}
 #     users = []
 #     if request.POST.get('user.group.update') :
-#         username = request.POST.get('username')
-#         groupname = request.POST.get('groupname')
-#         assign = request.POST.get('assign') == 'True' or request.POST.get('assign') == 'true'
-#           
+#         username    = request.POST.get('username')
+#         groupname   = request.POST.get('groupname')
+#         assign      = request.POST.get('assign') == 'True' or request.POST.get('assign') == 'true'
+#            
 #         if assign :
-#             user = UserInfo.objects.get(username=username)
-#             group = UserInfo.objects.get(username=groupname)
-#             userGroup = UserGroups(user=user, group=group)
+#             user        = UserInfo.objects.get(username=username)
+#             group       = UserInfo.objects.get(username=groupname)
+#             userGroup   = UserGroups(user=user, group=group)
 #             userGroup.save()
 #         else :
-#             userGroup = UserGroups.objects.get(user=username, group=groupname)
+#             userGroup   = UserGroups.objects.get(user=username, group=groupname)
 #             userGroup.delete()
-#           
+#            
 #         if request.is_ajax() :
 #             return HttpResponse({"username" : username, "groupname" : groupname, "assign" : assign })
 #         else :
@@ -111,7 +111,7 @@ def copyright(request, *args, **kwrags):
 #             users = UserInfo.objects.filter(username__contains=search_term, usertype__in=[UserInfo.NORMAL, UserInfo.SUPER])
 #         else :
 #             users = UserInfo.objects.filter(usertype__in=[UserInfo.NORMAL, UserInfo.SUPER])
-#           
+#            
 #     index = 0
 #     groupIndex = {}
 #     groups = list(UserInfo.objects.filter(usertype=UserInfo.GROUP))
@@ -122,7 +122,7 @@ def copyright(request, *args, **kwrags):
 #         user_group['group'].append([index, {'username'     : group.username,
 #                                             'first_name'   : auth_group.first_name,
 #                                             'last_name'    : auth_group.last_name }])
-#           
+#            
 #     for userinfo in users :
 #         auth_user = User.objects.get(username=userinfo.username)
 #         user = {'username'      : userinfo.username, 
@@ -132,23 +132,23 @@ def copyright(request, *args, **kwrags):
 #                 'assign'        : [] }
 #         for group in groups :
 #             user['assign'].append([group.username, False])
-#           
+#            
 #         userGroups = UserGroups.objects.filter(user=userinfo.username)
 #         for userGroup in userGroups :
 #             user['assign'][groupIndex[userGroup.group.username]][1] = True
-#           
+#            
 #         user_group['user'].append(user)
-#     
+#      
 #     context = {
 #         'user_group'    : user_group,
 #         'config'        : vars(config),
 #         'isSuper'       : UserInfo.getUserInfo(request).isSuper()
 #     }
 #     return render(request, "admin_user_edit.html", context)     
-# 
+#  
 # def administrator_user_new(request, *args, **kwargs):
 #     user_create = {}
-#       
+#        
 #     if request.POST.get("user_create") :        
 #         is_group    = request.POST.get('is_group')
 #         username    = request.POST.get('username')
@@ -156,11 +156,11 @@ def copyright(request, *args, **kwrags):
 #         email       = request.POST.get("email")
 #         first_name  = request.POST.get("first_name")
 #         memo        = request.POST.get("memo")
-#         
+#          
 #         # 최고 관리자에 의해 등록되는 ID 는 E-MAIL 은 필요 없음
 #         if not email and request.user.is_superuser :
 #             email = ""
-#           
+#            
 #         if is_group and not request.user.is_superuser :
 #             user_create['message'] = '그룹 사용자는 관리자만이 추가할 수 있습니다.'
 #         elif not re.match("[a-zA-Z0-9]{6,}|@[a-zA-Z0-9]{5,}", username) :
@@ -172,11 +172,11 @@ def copyright(request, *args, **kwrags):
 #                 usertype = UserInfo.NORMAL
 #                 if is_group :
 #                     usertype = UserInfo.GROUP
-#                        
+#                         
 #                 user = User.objects.create_user(username, email, password, first_name=first_name)
 #                 userinfo = UserInfo(username=username, usertype=usertype, memo=memo)
 #                 userinfo.save()
-#                 
+#                  
 #                 if UserInfo.getUserInfo(request).isSuper() :
 #                     user_create['message'] = '사용자가 등록되었습니다.'
 #                     context = {
@@ -188,33 +188,33 @@ def copyright(request, *args, **kwrags):
 #                     login(request, user) 
 #                     return redirect("/")
 #             except Exception as err :
-#                 log.error(err.__str__())
+#                 error(err.__str__())
 #                 user_create['message'] = '이미 존재하는 아이디 입니다.'
 #         else :
 #             user_create['message'] = '필수 항목을 입력하여주십시오.'
-#           
+#            
 #         if request.user.is_superuser and is_group :
 #             user_create['is_group'] = is_group
-#           
+#            
 #         if username :
 #             user_create['username'] = username
-#               
+#                
 #         if email :
 #             user_create['email'] = email
-#           
+#            
 #         if first_name :
 #             user_create['first_name'] = first_name
-#           
+#            
 #         if memo :
 #             user_create['memo'] = memo  
-#             
+#              
 #     context = {
 #         'config'        : vars(config),
 #         'user_create'   : user_create,
 #         'isSuper'       : UserInfo.getUserInfo(request).isSuper()
 #     }
 #     return HttpResponse(render(request, "admin_user_new.html", context))
-# 
+#  
 # def administrator_etc(request, *args, **kwargs):
 #     return HttpResponse(render(request, "admin_etc.html", {}))
 # 
@@ -1218,13 +1218,13 @@ def copyright(request, *args, **kwrags):
 #     response["message"] = "사용자 계정이 삭제 되었습니다."
 #     return HttpResponse(json.dumps(response))
 #     
-# def isChecked(request, param): 
-#     return (True, False)[request.POST.get(param) == None]
-#     
-# def restart(userinfo) :
-#     if not userinfo.isSuper() :
-#         log.error("관리자가 아닌 계정으로는 서버 리스타트 불가")
-#         return False
-#     
-#     log.info("THS restarted by " + userinfo.username)
-#     call(["uwsgi", "--reload", "uwsgi.pid"])
+def isChecked(request, param): 
+    return (True, False)[request.POST.get(param) == None]
+
+def restart(userinfo) :
+    if not userinfo.isSuper() :
+        error("Only super user can reatart CELLAR.")
+        return False
+     
+    info("CELLAR is being restarted by " + userinfo.username)
+    call(["uwsgi", "--reload", "uwsgi.pid"])

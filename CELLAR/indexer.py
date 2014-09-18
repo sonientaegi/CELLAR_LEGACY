@@ -1,9 +1,10 @@
 import os.path
-from SonienStudio import log
-from SonienStudio.log   import error
-from THS import config
- 
-DESCRIPTOR = ".descriptor.THD"
+
+from CELLAR             import config
+from SonienStudio.log   import error, info
+
+
+DESCRIPTOR = ".CELLAR"
 
 def getDirIndex(fullPath):
     """
@@ -40,23 +41,26 @@ def delDirIndex(fullPath):
     descriptor = fullPath + DESCRIPTOR
     try :
         os.remove(descriptor)
-        log.info("REMOVE DESCRIPTOR " + fullPath )
+        info("REMOVE DESCRIPTOR " + fullPath )
         return True
     except IOError as err :
-        log.error(err.__str__())
+        error(err.__str__())
         return False
      
-def resetDirIndex(path = config.ROOT):
+def resetDirIndex(path = None):
     """
     Directory 식별자를 전체 삭제 한다. 성공 시 참을 반환한다.
     """    
+    global config
+    if path is None :
+        path = config.ROOT
 
     if os.path.exists(path + os.sep + DESCRIPTOR) : 
         try :
             os.remove(path + os.sep + DESCRIPTOR)
-            log.info("REMOVE DESCRIPTOR " + path )
+            info("REMOVE DESCRIPTOR " + path )
         except IOError as err:  
-            log.error(err.__str__())
+            error(err.__str__())
     
     try : 
         path = path + os.path.sep
@@ -66,6 +70,6 @@ def resetDirIndex(path = config.ROOT):
             
             resetDirIndex(childPath)
     except IOError as err:  
-        log.error(err.__str__())
+        error(err.__str__())
 
     return True

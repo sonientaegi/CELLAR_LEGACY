@@ -10,7 +10,7 @@ import CELLAR
 from CELLAR.settings    import BASE_DIR
 from SonienStudio.log   import *
 
-class Config :    
+class Config : 
     def __init__(self) :
         self.TITLE              = "Tiny Home Storage"
         self.ROOT               = ""

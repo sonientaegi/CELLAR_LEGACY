@@ -1,0 +1,1 @@
+from CELLAR.views import cellar, administrator

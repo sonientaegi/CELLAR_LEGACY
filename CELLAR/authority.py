@@ -11,11 +11,10 @@ from os.path                import os
 from django.db              import transaction
 
 from CELLAR                 import config, index
-from CELLAR.models          import UserInfo, FileDescriptor, UserGroups, UserAuthority
+from CELLAR.models          import FileDescriptor, UserGroups, UserAuthority
 from SonienStudio.file      import FileManager
 from SonienStudio.log       import error
 
-global config
 
 class Directory :
     @staticmethod
@@ -121,7 +120,7 @@ class Directory :
          
         if file_id is not None and file_id >= 0 :
             try :
-                descriptor = FileDescriptor.objects.get(id=file_id)
+                descriptor = FileDescriptor.objects.get(file_id=file_id)
                  
                 readable    |= descriptor.readable
                 writeable   |= descriptor.writeable

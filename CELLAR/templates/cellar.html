@@ -23,14 +23,14 @@
 				<div>
 					<a href="/user/logout" 
 						data-ajax="false" data-role="button" data-mini="true" data-inline="true" style="width : 5em;">로그아웃</a>
-					<a href="/user/myinfo" 
+					<a href="/myinfo" 
 						data-ajax="false" data-role="button" data-mini="true" data-inline="true" style="width : 5em;">내 정보</a>
 				</div>
 				{% else %}
 				<div>
 					<a href="/user/login" 	
 						data-ajax="false" data-role="button" data-mini="true" data-inline="true" style="width : 5em;">로그인</a>
-					<a href="/user/register" 
+					<a href="/signup" 
 						data-ajax="false" data-role="button" data-mini="true" data-inline="true" style="width : 5em;">회원가입</a>
 				</div>					  
 				{% endif %}
@@ -162,22 +162,22 @@ var CELLAR = {
 		if(files.length == 0) {
 			return;
 		}
-		var baseDir	= CELLAR.cwd;
+		var path	= CELLAR.cwd;
 		params = 'csrfmiddlewaretoken=' + crsf_token;
-		params = params + '&baseDir=' + baseDir;
+		params = params + '&path=' + path;
 		
 		var target = [];
 		for(var i = 0; i < files.length; i++) {
 			var file = files[i];
 			for(var j = 0; j < file[2].length; j++) {
 				target.push(file[0] + file[2][j]);
-				console.log("DUMP " + baseDir + file[0] + file[2][j][0]);
+				console.log("DUMP " + path + file[0] + file[2][j][0]);
 				params = params + "&files[]=" + file[0] + file[2][j][0];
 			}
 		}
 		
 		var filename = "CELLAR.tar";
-		var dirs = baseDir.split("/");
+		var dirs = path.split("/");
 		for(var i = dirs.length - 1; i >= 0; i--) {
 		    if(dirs[i] == "") continue;
 		    
@@ -227,22 +227,34 @@ $( window ).on( "navigate", function( event, data ) {
 	}
 });
 
-/*
-console.log("loading /module/filelist start.");
-$("#content_filelist").load("/module/filelist", function() {
-	Filelist.setOnClickDirectoryListener(CELLAR.browse);
-	Filelist.setOnDragStartListener(CELLAR.dragStart_filelist);
-	console.log("loading /module/filelist completed.");
-});
+console.log("CELLAR.Filelist - Start loading");
+$("#content_filelist").load(
+	"/module/filelist", 
+	function(response, status, xhr) {
+		if(status == "success") {
+			Filelist.setOnClickDirectoryListener(CELLAR.browse);
+			Filelist.setOnDragStartListener(CELLAR.dragStart_filelist);	
+			console.log("CELLAR.Filelist - Loading success");
+		}
+		else {
+			console.log("CELLAR.Filelist - " + xhr.status + " " + xhr.statusText  );
+		}
+	});
 
-console.log("loading /module/directree start.");
-$("#content_directory").load("/module/directree", function() {
-	Directree.setOnClickDirectoryListener(CELLAR.browse);
-	Directree.setOnDragStartListener(CELLAR.dragStart_directree);
-	Directree.setOnDropListener(CELLAR.drop_on_directree);
-	console.log("loading /module/directree completed.");
-});
-*/
+console.log("CELLAR.Directree - Start loading");
+$("#content_directory").load(
+	"/module/directree", 
+	function(response, status, xhr) {
+		if(status == "success") {
+			Directree.setOnClickDirectoryListener(CELLAR.browse);
+			Directree.setOnDragStartListener(CELLAR.dragStart_directree);
+			Directree.setOnDropListener(CELLAR.drop_on_directree);
+			console.log("CELLAR.Directree - Loading success");
+		}
+		else {
+			console.log("CELLAR.Directree - " + xhr.status + " " + xhr.statusText  );
+		}
+	});
 
 $("#panel_right").on("panelbeforeopen", CELLAR.onPanelUpdate);
 $("#panel_right").on("panelclose", function(event, ui) {

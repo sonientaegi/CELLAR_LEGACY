@@ -7,8 +7,9 @@ Index will be unique identifier of targets serving by CELLAR.
 """
 
 import os.path
-from CELLAR             import config
-from SonienStudio.log   import error, info, ok
+
+from SonienStudio.log   import error, ok
+
 
 INDEX_FILE = ".file_id.CELLAR"
 
@@ -23,7 +24,7 @@ def dir_get(fullPath):
         return file_id
           
     except IOError as err:
-        error("index.dir.get : " + err.__str__())
+        # error("index.dir.get : " + err.__str__())
         return None
 
 def dir_set(fullPath, file_id):

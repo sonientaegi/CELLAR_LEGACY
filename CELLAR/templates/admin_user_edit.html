@@ -47,7 +47,7 @@
 				{% for groupInfo in user_group.group %}
 				<th class="context_menu cell-selectable group {{groupInfo.1.username|slice:'1:'}}" style="width: 100px; text-align: center; vertical-align: middle;" 
 					data-priority="{{groupInfo.0}}"
-					data-userid="{{groupInfo.1.username}}">{{groupInfo.1.username}}<BR>({{groupInfo.1.first_name}})</th>
+					data-username="{{groupInfo.1.username}}">{{groupInfo.1.username}}<BR>({{groupInfo.1.first_name}})</th>
 				{% endfor %}
 				<th>&nbsp;</th>
 			</tr>
@@ -56,7 +56,7 @@
 			<tbody>
 			{% for user in user_group.user %}
 			<tr class="{{user.username}}">
-				<td class="context_menu cell-selectable" data-userid="{{user.username}}" style="text-align: center; vertical-align: middle;">
+				<td class="context_menu cell-selectable" data-username="{{user.username}}" style="text-align: center; vertical-align: middle;">
 					{{ user.username }}<BR>({{ user.first_name }})
 				</td>
 				<td style="text-align: center; vertical-align: middle;">
@@ -203,7 +203,7 @@ var Admin = {
 		}
 		
 		// 그외 계정 정보 반영
-		$("#username").val(userinfo["userid"]);
+		$("#username").val(userinfo["username"]);
 		$("#name").val(userinfo["name"]);
 		$("#home").val(userinfo["home"]);
 		$("#email").val(userinfo["email"]);
@@ -214,7 +214,7 @@ var Admin = {
 			$.mobile.loading("show");
 			var params = {
 				csrfmiddlewaretoken : crsf_token,
-				userid		: userinfo["userid"],
+				username	: userinfo["username"],
 				name		: $("#name").val(),
 				email		: $("#email").val(),
 				home		: $("#home").val(),
@@ -249,8 +249,8 @@ var Admin = {
 						alert(jsonResponse["message"]);
 					}
 					else {
-						target.html(jsonResponse["userid"] + "<BR>(" + jsonResponse["name"] + ")" );
-						var selector = "." + jsonResponse["userid"] + ".super_user";
+						target.html(jsonResponse["username"] + "<BR>(" + jsonResponse["name"] + ")" );
+						var selector = "." + jsonResponse["username"] + ".super_user";
 						if(jsonResponse["usertype"] == 9) {
 							$(selector).show();	
 						}
@@ -276,9 +276,9 @@ var Admin = {
 				items : items,
 				callback : function(key, options) {
 					var target = $(this);
-					var userid = target.data("userid");
-					var selector = "." + userid;
-					if(userid[0] == "@") {
+					var username = target.data("username");
+					var selector = "." + username;
+					if(username[0] == "@") {
 						selector = selector.replace("@", "group.");
 					}
 					
@@ -286,7 +286,7 @@ var Admin = {
 				 	case "delete" :
 						popupYesNo.modal(
 							"확인",
-							"사용자 " + userid + " 을(를) 삭제 시겠습니까?",
+							"사용자 " + username + " 을(를) 삭제 시겠습니까?",
 							" ",		
 							function() { 
 								$.mobile.loading( "show", {
@@ -300,7 +300,7 @@ var Admin = {
 								
 								$.post("/user/delete", {
 									csrfmiddlewaretoken : crsf_token,
-									userid : userid
+									username : username
 								},
 								function(data, status) {
 									$.mobile.loading("hide");
@@ -325,31 +325,31 @@ var Admin = {
 				 	case "edit" :
 				 		$.post("/user/get", {
 							csrfmiddlewaretoken : crsf_token,
-							userid : userid
-						},
-						function(data, status) {
-							$.mobile.loading("hide");
-							
-							if(status != 'success') {
-								console.log("Fail to delete user");
-								return;
-							}
-							
-							jsonResponse = JSON.parse(data);
-							if(jsonResponse["code"] != 0) {
-								alert(jsonResponse["message"]);
-							}
-							else {
-								Admin.popupUserEditor(jsonResponse, target);	
-							}
-						});
-				 		break;
-				 	}
+							username : username
+							},
+									function(data, status) {
+										$.mobile.loading("hide");
+
+										if (status != 'success') {
+											console.log("Fail to delete user");
+											return;
+										}
+
+										jsonResponse = JSON.parse(data);
+										if (jsonResponse["code"] != 0) {
+											alert(jsonResponse["message"]);
+										} else {
+											Admin.popupUserEditor(jsonResponse,
+													target);
+										}
+									});
+							break;
+						}
+					}
 				}
 			}
 		}
-	}
-};
-$.contextMenu(Admin.contextMenu);
+	};
+	$.contextMenu(Admin.contextMenu);
 </script>
 {% endblock %}

@@ -1,37 +1,38 @@
-from django.conf.urls import patterns, include, url
-from django.contrib import admin
+from django.conf.urls           import patterns, include, url
+from django.contrib             import admin
 
-from CELLAR import settings
-from CELLAR import views
+from CELLAR                     import settings, views
 
 
 admin.autodiscover()
 
 urlpatterns = patterns('', 
-    url(r'^admin/'              , include(admin.site.urls)),
+    url(r'^admin/'                      , include(admin.site.urls)),
     
-    url(r'^$'                   , views.index, name="index"),
-    url(r'^copyright$'          , views.copyrightPage),
-    url(r'^administrator$'              , views.administrator, name="administrator"),
-#     url(r'^administrator/user/edit$'    , views.administrator_user_edit),
-#     url(r'^administrator/user/new$'     , views.administrator_user_new),
-#     url(r'^administrator/etc$'  , views.administrator_etc),
+    url(r'^$'                           , views.cellar.main, name="cellar"),
+    url(r'^copyright$'                  , views.cellar.copyrightPage),
+    url(r'^administrator$'              , views.administrator.general, name="administrator"),
+    url(r'^administrator/user/edit$'    , views.administrator.userEdit),
+    url(r'^administrator/user/new$'     , views.administrator.userNew),
+    url(r'^administrator/etc$'          , views.administrator.etc),
      
-#     url(r'^module/directree$'   , views.module_directree),
-#     url(r'^module/filelist$'    , views.module_filelist),
-#     url(r'^module/upload$'      , views.module_upload),
-#     url(r'^browse/directory$'   , views.browse_directory),
-#     url(r'^browse/filelist$'    , views.browse_filelist),
-#     url(r'^browse$'             , views.browse),
-#     
-#     
+    url(r'^module/directree$'           , views.cellar.directree),
+    url(r'^module/filelist$'            , views.cellar.filelist),
+    url(r'^module/upload$'              , views.cellar.upload),
+    url(r'^myinfo$'                     , views.cellar.myinfo),
+    url(r'^signup$'                     , views.cellar.signup),  
+    
+    url(r'^browse/directory$'           , views.util.browseDirectory),
+    url(r'^browse/filelist$'            , views.util.browseFilelist),
+    url(r'^browse$'                     , views.util.browse),
+    url(r'^upload$'                     , views.util.upload),  
 #     url(r'^util/renamegroup$'   , views.util_renameGroup),
 #     url(r'^util/rename$'        , views.util_rename),
 #     url(r'^util/move$'          , views.util_move),
-#     url(r'^util/createdir$'     , views.util_createDir),
-#     url(r'^util/deletedir$'     , views.util_deleteDir),
-#     url(r'^util/deletefiles$'   , views.util_deleteFiles), 
-#     url(r'^util/upload$'        , views.util_upload),
+    url(r'^util/createdir$'             , views.util.createDir),
+    url(r'^util/deletedir$'             , views.util.deleteDir),
+    url(r'^util/deletefiles$'           , views.util.deleteFiles), 
+    
 #     
 #     url(r'^auth/reset$'         , views.authority_reset), 
 #     url(r'^auth/manager$'       , views.authority_manager),
@@ -42,20 +43,18 @@ urlpatterns = patterns('',
 #     url(r'^auth/user/get$'      , views.authority_getUsers), 
 #     url(r'^auth/user/set$'      , views.authority_setUsers),
 # #  
-#     url(r'^user/register$'      , views.user_register),  
-#     url(r'^user/login$'                 , views.user_login),
-#     url(r'^user/login/(?P<redirect>.*)$', views.user_login),
-#     url(r'^user/logout$'        , views.uesr_logout), 
+#     
+    url(r'^user/login$'                 , views.util.userLogin),
+    url(r'^user/login/(?P<redirect>.*)$', views.util.userLogin),
+    url(r'^user/logout$'                , views.util.uesrLogout), 
 #     url(r'^user/group$'         , views.user_group), 
-#     url(r'^user/delete$'        , views.user_delete),
-#     url(r'^user/get$'           , views.user_get),
-#     url(r'^user/update$'        , views.user_update), 
-#     url(r'^user/myinfo$'        , views.user_myinfo), 
-# 
-# 
-#     url(r'^tarload/(?P<filename>.*)$'   , views.tarload),
-#     url(r'^tarload$'                    , views.tarload),
-#     url(r'^download/(?P<path>.*)$'      , views.download), 
+    url(r'^user/delete$'                , views.util.userDelete),
+    url(r'^user/get$'                   , views.util.userGet),
+    url(r'^user/update$'                , views.util.userUpdate), 
+  
+    url(r'^tarload/(?P<filename>.*)$'   , views.util.tarload),
+    url(r'^tarload$'                    , views.util.tarload),
+    url(r'^download/(?P<filepath>.*)$'  , views.util.download), 
     url(r'^libs/(?P<path>.*)$'          , 'django.views.static.serve', {'document_root' : settings.BASE_DIR + '/CELLAR/libs'}),
     url(r'^static/(?P<path>.*)$'        , 'django.views.static.serve', {'document_root' : settings.BASE_DIR + '/CELLAR/static'}),
     url(r'^templates/(?P<path>.*)$'     , 'django.views.static.serve', {'document_root' : settings.BASE_DIR + '/CELLAR/templates'}),    

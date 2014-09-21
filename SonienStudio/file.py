@@ -1,7 +1,5 @@
 import os
 import shutil
-from SonienStudio               import log
-
 
 os.path._normpath = os.path.normpath
 os.path.normpath = lambda path : os.path._normpath(path).replace("\\", "/")
@@ -13,15 +11,15 @@ class FileManager :
 			self._root_norm	= os.path.normpath(root)
 		else :
 			raise AssertionError(root + " is not a directory")
-		 
-	def isValidDir(self, dir) :
+		
+	def isValidDir(self, dirPath) :
 		"""
 		입력한 디렉토리의 Validity 를 검증하고, 전체경로를 반환한다.
 		return True, full path 	: 정상
 		return False, 	None	: 경로가 잘못 지정되었습니다.
 		"""
 		
-		fullPath = self._root + dir
+		fullPath = self._root + dirPath
 		if not os.path.isdir(fullPath) :
 			return False, None
 		else : 
@@ -86,7 +84,7 @@ class FileManager :
 			
 		return fileList[0], sorted(fileGroupArray, key = lambda record : record[0])
 		
-	def getFileGroup(self, dir = "/") :
+	def getFileGroup(self, dirPath = "/") :
 		"""
 		지정한 디렉토리의 하위 디렉토리와 파일 리스트를 정렬하여 반환한다.
 		return	: None 또는 ([디렉토리], [파일])
@@ -94,7 +92,7 @@ class FileManager :
 		파일		: (basename, root 기준 상대 경로, [(확장자, root 기준 상대 경로, size)])  
 		"""
 		
-		fileList = self.getFileList(dir)
+		fileList = self.getFileList(dirPath)
 		if fileList == None :
 			return None
 		

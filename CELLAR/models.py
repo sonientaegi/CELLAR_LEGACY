@@ -1,4 +1,4 @@
-from os.path import os
+from os.path                        import os
 
 from django.contrib.auth.models     import User
 from django.core.exceptions         import ObjectDoesNotExist
@@ -6,9 +6,6 @@ from django.db                      import models, transaction
 
 from CELLAR                         import config
 from SonienStudio.log               import *
-
-
-global config
 
 class FileDescriptor(models.Model): 
     default = [True, False, False]

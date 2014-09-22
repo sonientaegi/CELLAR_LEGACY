@@ -1,14 +1,3 @@
-'''
-Created on 2014. 4. 27.
-
-@author: Sonien Taegi
-'''
-"""
-Index 페이지를 호출한다.
-"""
-
-
-
 from _sqlite3                   import IntegrityError
 import json
 from os.path                    import os

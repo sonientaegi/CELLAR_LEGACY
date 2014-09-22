@@ -63,13 +63,13 @@ class UserInfo(models.Model):
     @staticmethod
     def getUserInfo(request):
         if request.user.is_authenticated() :
-            userInfo = None
+            userinfo = None
             username = request.user.get_username()
             try :
-                userInfo = UserInfo.objects.get(username = username);
+                userinfo = UserInfo.objects.get(username = username);
                 # django 관리자는 자동적으로 SUPER USER 권한 부여
                 if request.user.is_superuser :
-                    userInfo.usertype = UserInfo.SUPER
+                    userinfo.usertype = UserInfo.SUPER
                     
             except ObjectDoesNotExist as err :
                 error("%s : %s" % (username, err.__str__()))
@@ -78,7 +78,7 @@ class UserInfo(models.Model):
                     userinfo = UserInfo(username=username, usertype=UserInfo.SUPER)
                     userinfo.save()
                  
-            return userInfo 
+            return userinfo 
         else :
             guest           = UserInfo(username = 'guest')
             guest.home      = config.HOME_GUEST

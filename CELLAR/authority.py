@@ -59,7 +59,7 @@ class Directory :
     
         else :
             try : 
-                descriptor = FileDescriptor.objects.get(id=file_id)
+                descriptor = FileDescriptor.objects.get(file_id=file_id)
                 file_id = descriptor.file_id
                 if inherit  is not None :
                     descriptor.inherit = inherit
@@ -87,8 +87,8 @@ class Directory :
         if file_id is None :
             return True
         elif index.dir_del(fullPath):
-            FileDescriptor.objects.filter(file_id=file_id).delAuth()
-            FileDescriptor.objects.filter(reference_id=file_id).delAuth()
+            FileDescriptor.objects.filter(file_id=file_id).delete()
+            FileDescriptor.objects.filter(reference_id=file_id).delete()
             return True
         else :
             return False

@@ -61,4 +61,19 @@ def signup(request, *args, **kwargs):
         
     else :
         return HttpResponse(render(request, "user_register.html", { "isSuper" : False } ))
-    
+
+def authorityManager(request, *args, **kwargs) :
+    """
+    auth_type 
+        4 : Read
+        2 : Write
+        1 : Delete
+    """    
+    cwd = request.POST.get("path")
+    auth_type = request.POST.get("auth_type")
+    if auth_type :
+        auth_type = int(auth_type)
+    else :
+        auth_type = 4 
+     
+    return HttpResponse(render(request, "auth_manager.html", {'cwd' : cwd, 'auth_type' : auth_type}))    

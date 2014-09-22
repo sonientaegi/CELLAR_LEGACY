@@ -6,7 +6,7 @@ from CELLAR                     import settings, views
 
 admin.autodiscover()
 
-urlpatterns = patterns('', 
+urlpatterns = patterns('',  
     url(r'^admin/'                      , include(admin.site.urls)),
     
     url(r'^$'                           , views.cellar.main, name="cellar"),
@@ -26,28 +26,25 @@ urlpatterns = patterns('',
     url(r'^browse/filelist$'            , views.util.browseFilelist),
     url(r'^browse$'                     , views.util.browse),
     url(r'^upload$'                     , views.util.upload),  
-#     url(r'^util/renamegroup$'   , views.util_renameGroup),
-#     url(r'^util/rename$'        , views.util_rename),
-#     url(r'^util/move$'          , views.util_move),
+    url(r'^util/renamegroup$'           , views.util.renameGroup),
+    url(r'^util/rename$'                , views.util.rename),
+    url(r'^util/move$'                  , views.util.move), 
     url(r'^util/createdir$'             , views.util.createDir),
     url(r'^util/deletedir$'             , views.util.deleteDir),
     url(r'^util/deletefiles$'           , views.util.deleteFiles), 
-    
-#     
-#     url(r'^auth/reset$'         , views.authority_reset), 
-#     url(r'^auth/manager$'       , views.authority_manager),
-#     url(r'^auth/default/get$'   , views.authority_getDefault),   
-#     url(r'^auth/default/set$'   , views.authority_setDefault),
-#     url(r'^auth/default/del$'   , views.authority_delDefault),
-#     url(r'^auth/user/check$'    , views.authority_getUser),  
-#     url(r'^auth/user/get$'      , views.authority_getUsers), 
-#     url(r'^auth/user/set$'      , views.authority_setUsers),
-# #  
-#     
+        
+    url(r'^auth/manager$'               , views.cellar.authorityManager),
+    url(r'^auth/reset$'                 , views.util.resetAllAuthority),
+    url(r'^auth/default/get$'           , views.util.getDefaultAuthority),   
+    url(r'^auth/default/set$'           , views.util.setDefaultAuthority),
+    url(r'^auth/default/del$'           , views.util.delDefaultAuthority),
+    url(r'^auth/user/check$'            , views.util.getUserAuthority),  
+    url(r'^auth/user/get$'              , views.util.getAuthorizedUsers), 
+    url(r'^auth/user/set$'              , views.util.setAuthorizedUsers),
+ 
     url(r'^user/login$'                 , views.util.userLogin),
     url(r'^user/login/(?P<redirect>.*)$', views.util.userLogin),
     url(r'^user/logout$'                , views.util.uesrLogout), 
-#     url(r'^user/group$'         , views.user_group), 
     url(r'^user/delete$'                , views.util.userDelete),
     url(r'^user/get$'                   , views.util.userGet),
     url(r'^user/update$'                , views.util.userUpdate), 

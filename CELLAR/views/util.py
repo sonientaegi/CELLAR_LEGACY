@@ -7,7 +7,9 @@ Created on 2014. 4. 27.
 Index 페이지를 호출한다.
 """
 
-from _sqlite3 import IntegrityError
+
+
+from _sqlite3                   import IntegrityError
 import json
 from os.path                    import os
 import re
@@ -20,13 +22,12 @@ from django.contrib.auth.views  import login, logout
 from django.core.exceptions     import PermissionDenied
 from django.core.urlresolvers   import reverse
 from django.db                  import transaction
-from django.http.response       import HttpResponse, HttpResponseServerError, StreamingHttpResponse, \
-    HttpResponseNotAllowed
+from django.http.response       import HttpResponse, HttpResponseServerError, StreamingHttpResponse, HttpResponseNotAllowed
 from django.shortcuts           import redirect, render
 
-from CELLAR                     import util
+from CELLAR                     import util, index, config
 from CELLAR.authority           import Directory
-from CELLAR.models              import UserInfo
+from CELLAR.models              import UserInfo, FileDescriptor, UserAuthority
 from CELLAR.util                import CELLAR_FileManager
 from SonienStudio.log           import error, info, ok
 from SonienStudio.tarstream     import TarStream
@@ -324,389 +325,361 @@ def deleteFiles(request, *args, **kwargs):
     }
     return HttpResponse(json.dumps(response))
 
-# def util_rename(request, *args, **kwargs):
-#     """
-#     * Common 
-#     0 : "SUCCESS",
-#     1 : "파일/경로를 찾을 수 없습니다",
-#     2 : "변경하려는 대상이 존재합니다",
-#     3 : "허용되지 않는 요청입니다",
-#     4 : "오류가 발생하였습니다",
-#     5 : "권한이 없습니다",
-#     
-#     * Additional 
-#     dst     : New name. Not valid in error.
-#     dstPath : New path. Not valid in error. 
-#     """
-#     if not request.is_ajax() :
-#         log.error("File util for THS supports AJAX only")
-#         return HttpResponseNotAllowed("Supports AJAX only")
-#       
-#     srcPath = request.POST.get('srcPath');
-#     dst = request.POST.get('dst');
-#     dstPath = os.path.normpath(srcPath + os.path.sep + os.pardir + os.path.sep + dst)
-#     fileManager = THSFileManager(request) 
-#     code = fileManager.rename(srcPath, dstPath)
-#     if code == 0 and os.path.isdir(fileManager.getFullPath(dstPath)) :
-#         dstPath += "/"
-#         
-#     message = {
-#         0 : "SUCCESS",
-#         1 : "파일/경로를 찾을 수 없습니다",
-#         2 : "변경하려는 대상이 존재합니다",
-#         3 : "허용되지 않는 요청입니다",
-#         4 : "오류가 발생하였습니다",
-#         5 : "권한이 없습니다",
-#     }
-#     response = {
-#         "code"      : code,
-#         "message"   : message[code],
-#         "dst"       : dst,
-#         "dstPath"   : dstPath
-#     }
-#     return HttpResponse(json.dumps(response))
+def rename(request, *args, **kwargs):
+    """
+    * Common 
+    0 : "SUCCESS",
+    1 : "파일/경로를 찾을 수 없습니다",
+    2 : "변경하려는 대상이 존재합니다",
+    3 : "허용되지 않는 요청입니다",
+    4 : "오류가 발생하였습니다",
+    5 : "권한이 없습니다",
+     
+    * Additional 
+    dst     : New name. Not valid in error.
+    dstPath : New path. Not valid in error. 
+    """
+    
+    srcPath = request.POST.get('srcPath');
+    dst     = request.POST.get('dst');
+    dstPath = os.path.normpath(srcPath + os.path.sep + os.pardir + os.path.sep + dst)
+    fileManager = CELLAR_FileManager(request) 
+    code = fileManager.rename(srcPath, dstPath)
+    if code == 0 and os.path.isdir(fileManager.getFullPath(dstPath)) :
+        dstPath += "/"
+         
+    message = {
+        0 : "SUCCESS",
+        1 : "파일/경로를 찾을 수 없습니다",
+        2 : "변경하려는 대상이 존재합니다",
+        3 : "허용되지 않는 요청입니다",
+        4 : "오류가 발생하였습니다",
+        5 : "권한이 없습니다",
+    }
+    response = {
+        "code"      : code,
+        "message"   : message[code],
+        "dst"       : dst,
+        "dstPath"   : dstPath
+    }
+    return HttpResponse(json.dumps(response))
 # 
-# def util_renameGroup(request, *args, **kwargs):
-#     """
-#     * Common 
-#     0 : "SUCCESS",
-#     1 : "파일을 찾을 수 없습니다",
-#     2 : "변경하려는 대상이 존재합니다",
-#     3 : "허용되지 않는 요청입니다",
-#     4 : "오류가 발생하였습니다",
-#     5 : "권한이 없습니다",
-#     
-#     * Additional 
-#     dstGroup    : New group path. Not valid in error. 
-#     result      : [ (ext, errno, dstPath), (ext, errno dstPath), ... ] 
-#     """
-#     if not request.is_ajax() :
-#         log.error("File util for THS supports AJAX only")
-#         return HttpResponseNotAllowed("Supports AJAX only")
-#       
-#     srcGroup = request.POST.get('srcGroup');
-#     srcExts = request.POST.getlist('srcExts[]');
-#     dst = request.POST.get('dst');
-#     dstGroup = os.path.normpath(srcGroup + os.path.sep + os.pardir + os.path.sep + dst)
-#     
-#     fileManager = THSFileManager(request) 
-#     result = []
-#     code = 0
-#     
-#     for ext in srcExts :
-#         newPath = ""
-#         srcPath = srcGroup + ext
-#         dstPath = dstGroup + ext
-#         errno = fileManager.rename(srcPath, dstPath)
-#         if errno :  code = errno
-#         else : newPath = dstPath
-#         
-#         result.append([ext, errno, newPath])
-#         
-#     message = {
-#         0 : "SUCCESS",
-#         1 : "파일/경로를 찾을 수 없습니다",
-#         2 : "변경하려는 대상이 존재합니다",
-#         3 : "허용되지 않는 요청입니다",
-#         4 : "오류가 발생하였습니다",
-#         5 : "권한이 없습니다",
-#     }
-#     response = {
-#         "code"      : code,
-#         "message"   : message[code],
-#         "dstGroup"  : dstGroup,
-#         "result"    : result  
-#     }
-#     return HttpResponse(json.dumps(response))
-# 
-# 
-# def util_move(request, *args, **kwargs):
-#     """
-#     * Common 
-#     0 : "SUCCESS",
-#     1 : "파일/경로를 찾을 수 없습니다",
-#     2 : "이동하려는 위치가 파일입니다",
-#     3 : "허용되지 않는 요청입니다",
-#     4 : "오류가 발생하였습니다",
-#     5 : "권한이 없습니다",
-#     
-#     * Additional 
-#     dstPath : Destination path
-#     result  : [ (target, errno, newPath), (target, errnom newPath), ... ] 
-#     """
-#     if not request.is_ajax() :
-#         log.error("File util for THS supports AJAX only")
-#         return HttpResponseNotAllowed("Supports AJAX only")
-#     
-#     targets = request.POST.getlist("targets[]")
-#     dstPath = request.POST.get("dstPath")
-#     fileManager = THSFileManager(request)
-#     
-#     result = []
-#     code = 0
-#     for target in targets :
-#         newPath = ""
-#         errno = fileManager.move(target, dstPath)
-#         if errno :  code = errno
-#         else : newPath = dstPath + os.path.basename(os.path.normpath(target))
-#         
-#         result.append([target, errno, newPath + "/"])
-#     
-#     message = {
-#         0 : "SUCCESS",
-#         1 : "파일/경로를 찾을 수 없습니다",
-#         2 : "변경하려는 위치가 파일입니다",
-#         3 : "허용되지 않는 요청입니다",
-#         4 : "오류가 발생하였습니다",
-#         5 : "권한이 없습니다",
-#     }
-#     response = {
-#         "code"      : code,
-#         "message"   : message[code],
-#         "dstPath"   : dstPath,
-#         "result"    : result  
-#     }
-#     return HttpResponse(json.dumps(response)) 
-# 
+def renameGroup(request, *args, **kwargs):
+    """
+    * Common 
+    0 : "SUCCESS",
+    1 : "파일을 찾을 수 없습니다",
+    2 : "변경하려는 대상이 존재합니다",
+    3 : "허용되지 않는 요청입니다",
+    4 : "오류가 발생하였습니다",
+    5 : "권한이 없습니다",
+     
+    * Additional 
+    dstGroup    : New group path. Not valid in error. 
+    result      : [ (ext, errno, dstPath), (ext, errno dstPath), ... ] 
+    """
+       
+    srcGroup = request.POST.get('srcGroup');
+    srcExts = request.POST.getlist('srcExts[]');
+    dst = request.POST.get('dst');
+    dstGroup = os.path.normpath(srcGroup + os.path.sep + os.pardir + os.path.sep + dst) 
+     
+    fileManager = CELLAR_FileManager(request) 
+    result = []
+    code = 0
+     
+    for ext in srcExts :
+        newPath = ""
+        srcPath = srcGroup + ext
+        dstPath = dstGroup + ext
+        errno = fileManager.rename(srcPath, dstPath)
+        if errno :  code = errno
+        else : newPath = dstPath
+         
+        result.append([ext, errno, newPath])
+         
+    message = {
+        0 : "SUCCESS",
+        1 : "파일/경로를 찾을 수 없습니다",
+        2 : "변경하려는 대상이 존재합니다",
+        3 : "허용되지 않는 요청입니다",
+        4 : "오류가 발생하였습니다",
+        5 : "권한이 없습니다",
+    }
+    response = {
+        "code"      : code,
+        "message"   : message[code],
+        "dstGroup"  : dstGroup,
+        "result"    : result  
+    }
+    return HttpResponse(json.dumps(response))
 
+def move(request, *args, **kwargs):
+    """
+    * Common 
+    0 : "SUCCESS",
+    1 : "파일/경로를 찾을 수 없습니다",
+    2 : "이동하려는 위치가 파일입니다",
+    3 : "허용되지 않는 요청입니다",
+    4 : "오류가 발생하였습니다",
+    5 : "권한이 없습니다",
+     
+    * Additional 
+    dstPath : Destination path
+    result  : [ (target, errno, newPath), (target, errnom newPath), ... ] 
+    """
+    
+    targets = request.POST.getlist("targets[]")
+    dstPath = request.POST.get("dstPath")
+    fileManager = CELLAR_FileManager(request)
+     
+    result = []
+    code = 0
+    for target in targets :
+        newPath = ""
+        errno = fileManager.move(target, dstPath)
+        if errno :  code = errno
+        else : newPath = dstPath + os.path.basename(os.path.normpath(target))
+         
+        result.append([target, errno, newPath + "/"])
+     
+    message = {
+        0 : "SUCCESS",
+        1 : "파일/경로를 찾을 수 없습니다",
+        2 : "변경하려는 위치가 파일입니다",
+        3 : "허용되지 않는 요청입니다",
+        4 : "오류가 발생하였습니다",
+        5 : "권한이 없습니다",
+    }
+    response = {
+        "code"      : code,
+        "message"   : message[code],
+        "dstPath"   : dstPath,
+        "result"    : result  
+    }
+    return HttpResponse(json.dumps(response)) 
+ 
+def resetAllAuthority(request, *args, **kwargs) :
+    response = {
+        "code"      : 0,
+        "message"   : ""
+    }
+    
+    if not UserInfo.getUserInfo(request).isSuper() :
+        response['code']    = -1
+        response['message'] = "권한 초기화는 최고 관리자만 가능합니다"
+    else :
+        # DB 초기화    
+        FileDescriptor.objects.all().delete()
+        UserAuthority.objects.all().delete()
+        FileDescriptor(file_id=0, file="", reference=None).save()  # 이건 더미
+     
+        index.dir_reset()
+         
+    return HttpResponse(json.dumps(response))
 
-# 
+def getDefaultAuthority(request, *args, **kwargs):
+    path = request.POST.get("path")
+    response = {
+        "path"      : path,
+        "register"  : False,
+        "readable"  : config.DEFAULT_AUTH_DIR_READABLE,
+        "writeable" : config.DEFAULT_AUTH_DIR_WRITEABLE,
+        "deletable" : config.DEFAULT_AUTH_DIR_DELETABLE,
+        "inherit"   : config.DEFAULT_AUTH_DIR_INHERIT
+    }
+     
+    userinfo = UserInfo.getUserInfo(request)
+    fullpath = userinfo.getHomePath() + path
+    file_id = index.dir_get(fullpath)
+    if file_id is not None :
+        fileDescriptor = FileDescriptor.objects.get(file_id=file_id)
+        response['register']    = True
+        response['readable']    = fileDescriptor.readable
+        response['writeable']   = fileDescriptor.writeable
+        response['deletable']   = fileDescriptor.deletable
+        response['inherit']     = fileDescriptor.inherit
+        
+    return HttpResponse(json.dumps(response))
+ 
+def setDefaultAuthority(request, *args, **kwargs):
+    path = request.POST.get("path")
+    response = {
+        "code"      : 0,
+        "message"   : "",
+        "path"      : path,
+        "register"  : False,
+        "readable"  : config.DEFAULT_AUTH_DIR_READABLE,
+        "writeable" : config.DEFAULT_AUTH_DIR_WRITEABLE,
+        "deletable" : config.DEFAULT_AUTH_DIR_DELETABLE,
+        "inherit"   : config.DEFAULT_AUTH_DIR_INHERIT
+    }
+     
+    userinfo = UserInfo.getUserInfo(request)
+    fullpath = userinfo.getHomePath() + request.POST.get("path")
 
-#     
+    if not userinfo.isSuper() :
+        response['code']    = -1
+        response['message'] = "권한 초기화는 최고 관리자만 가능합니다"
+    else :     
+        inherit = request.POST.get("inherit")
+        if inherit is not None :
+            inherit = inherit == "1"
+     
+        readable = request.POST.get("readable")
+        if readable is not None :
+            readable = readable == "1"
+          
+        writeable = request.POST.get("writeable")
+        if writeable is not None :
+            writeable = writeable == "1"
+          
+        deletable = request.POST.get("deletable")
+        if deletable is not None :
+            deletable = deletable == "1"
+     
+        result = Directory.setAuth(fullpath, inherit, readable, writeable, deletable)
+        if result[0] >= 0 :
+            response["code"]        = 0
+            response["message"]     = result[1]
+            response['register']    = True
+            response['inherit']     = inherit
+            response['readable']    = readable
+            response['writeable']   = writeable
+            response['deletable']   = deletable
+     
+    return HttpResponse(json.dumps(response))
 
-# 
-# def authority_reset(request, *args, **kwargs) :
-#     response = {
-#         "code"      : 0,
-#         "message"   : ""
-#     }
-#     if not request.user.is_superuser :
-#         response['code'] = -1
-#         response['message'] = "최고 관리자만이 설정을 변경할 수 있습니다."
-#     else :
-#         # DB 초기화    
-#         FileDescriptor.objects.all().delete()
-#         UserAuthority.objects.all().delete()
-#         FileDescriptor(id=0, file="", reference=None).save()  # 이건 더미
-#     
-#         util_index.resetDirIndex()
-#         
-#     return HttpResponse(json.dumps(response))
-# 
-# def authority_manager(request, *args, **kwargs) :
-#     """
-#     auth_type 
-#         4 : Read
-#         2 : Write
-#         1 : Delete
-#     """    
-#     cwd = request.POST.get("path")
-#     auth_type = request.POST.get("auth_type")
-#     if auth_type :
-#         auth_type = int(auth_type)
-#     else :
-#         auth_type = 4 
-#     
-#     
-#     return HttpResponse(render(request, "auth_manager.html", {'cwd' : cwd, 'auth_type' : auth_type}))
-# 
-# def authority_getDefault(request, *args, **kwargs):
-#     path = request.POST.get("path")
-#     response = {
-#         "path"      : path,
-#         "register"  : False,
-#         "readable"  : config.DEFAULT_AUTH_DIR_READABLE,
-#         "writeable" : config.DEFAULT_AUTH_DIR_WRITEABLE,
-#         "deletable" : config.DEFAULT_AUTH_DIR_DELETABLE,
-#         "inherit"   : config.DEFAULT_AUTH_DIR_INHERIT
-#     }
-#     
-#     userinfo = UserInfo.getUserInfo(request)
-#     fullpath = userinfo.getUserHome() + path
-#     index = util_index.getDirIndex(fullpath)
-#     if index is not None :
-#         fileDescriptor = FileDescriptor.objects.get(id=index)
-#         response['register'] = True
-#         response['readable'] = fileDescriptor.readable
-#         response['writeable'] = fileDescriptor.writeable
-#         response['deletable'] = fileDescriptor.deletable
-#         response['inherit'] = fileDescriptor.inherit
-# #         
-#     return HttpResponse(json.dumps(response))
-# 
-# def authority_setDefault(request, *args, **kwargs):
-#     path = request.POST.get("path")
-#     response = {
-#         "code"      : 0,
-#         "message"   : "",
-#         "path"      : path,
-#         "register"  : False,
-#         "readable"  : config.DEFAULT_AUTH_DIR_READABLE,
-#         "writeable" : config.DEFAULT_AUTH_DIR_WRITEABLE,
-#         "deletable" : config.DEFAULT_AUTH_DIR_DELETABLE,
-#         "inherit"   : config.DEFAULT_AUTH_DIR_INHERIT
-#     }
-#     
-#     userinfo = UserInfo.getUserInfo(request)
-#     fullpath = userinfo.getUserHome() + request.POST.get("path")
-#       
-#     inherit = request.POST.get("inherit")
-#     if inherit is not None :
-#         inherit = inherit == "1"
-# 
-#     readable = request.POST.get("readable")
-#     if readable is not None :
-#         readable = readable == "1"
-#      
-#     writeable = request.POST.get("writeable")
-#     if writeable is not None :
-#         writeable = writeable == "1"
-#      
-#     deletable = request.POST.get("deletable")
-#     if deletable is not None :
-#         deletable = deletable == "1"
-# 
-#     result = Directory.set(fullpath, inherit, readable, writeable, deletable)
-#     if result[0] >= 0 :
-#         response["code"] = 0
-#         response["message"] = result[1]
-#         response['register'] = True
-#         response['inherit'] = inherit
-#         response['readable'] = readable
-#         response['writeable'] = writeable
-#         response['deletable'] = deletable
-#     
-#     return HttpResponse(json.dumps(response))
-# 
-# def authority_getUser(request, *args, **kwargs):
-#     path = request.POST.get("path")
-#     fileManager = THSFileManager(request)
-#     response = {
-#         "code"      : 0,
-#         "message"   : "",
-#         "path"      : path,
-#         "register"  : False,
-#         "readable"  : fileManager.isReadable(path),
-#         "writeable" : fileManager.isWriteable(path),
-#         "deletable" : fileManager.isDeletable(path)
-#     }
-#     
-#     return HttpResponse(json.dumps(response))
-# 
-# def authority_delDefault(request, *args, **kwargs):
-#     path = request.POST.get("path")
-#     response = {
-#         "code"      : 0,
-#         "message"   : "",
-#         "path"      : path,
-#         "register"  : False,
-#         "readable"  : config.DEFAULT_AUTH_DIR_READABLE,
-#         "writeable" : config.DEFAULT_AUTH_DIR_WRITEABLE,
-#         "deletable" : config.DEFAULT_AUTH_DIR_DELETABLE,
-#         "inherit"   : config.DEFAULT_AUTH_DIR_INHERIT
-#     }
-#     
-#     userinfo = UserInfo.getUserInfo(request)
-#     fullpath = userinfo.getUserHome() + request.POST.get("path")
-#     
-#     if userinfo.usertype != UserInfo.SUPER :
-#         response['code'] = 1
-#         response['message'] = "최고 관리자만 가능합니다"
-#     elif not Directory.delete(fullpath) : 
-#         response["code"] = -1
-#         response["message"] = "디렉토리 식별자 삭제 실패"
-#         
-#     return HttpResponse(json.dumps(response))
-# 
-# def authority_getUsers(request, *args, **kwargs):
-#     response = {
-#         "code"      : 0,
-#         "message"   : "",
-#         "users"     : []
-#     }
-#     
-#     userinfo = UserInfo.getUserInfo(request)
-#     fullpath = userinfo.getUserHome() + request.POST.get("path")
-#     type = int(request.POST.get("type"))
-#     
-#     if userinfo.usertype == UserInfo.SUPER :
-#         index = util_index.getDirIndex(fullpath)
-#         if index is not None :
-#             for user in UserAuthority.objects.filter(file_id=index)  :
-#                 if      type & 4 and not user.readable     : continue
-#                 elif    type & 2 and not user.writeable    : continue
-#                 elif    type & 1 and not user.deletable    : continue
-#                 
-#                 response['users'].append([user.username.username,
-#                                           user.username.getName(),
-#                                           user.username.usertype])
-#     else :
-#         response['code'] = 1
-#         response['message'] = "최고 관리자만 가능합니다"
-#         
-#     return HttpResponse(json.dumps(response))
-# 
-# def authority_setUsers(request, *args, **kwargs):
-#     response = {
-#         "code"      : 0,
-#         "message"   : "",
-#         "users"     : []
-#     }
-#     
-#     userinfo = UserInfo.getUserInfo(request)
-#     fullpath = userinfo.getUserHome() + request.POST.get("path")
-#     type = request.POST.get("type")
-#     ids = request.POST.getlist("ids[]")
-#     readable = request.POST.get('readable')
-#     readable = (readable == "1", None)[readable == None]
-#     writeable = request.POST.get('writeable')
-#     writeable = (writeable == "1", None)[writeable == None]
-#     deletable = request.POST.get('deletable')
-#     deletable = (deletable == "1", None)[deletable == None]
-#     if userinfo.usertype == UserInfo.SUPER :         
-#         index = util_index.getDirIndex(fullpath) 
-#         if index is None :
-#             index = Directory.set(fullpath, config.DEFAULT_AUTH_DIR_INHERIT, config.DEFAULT_AUTH_DIR_READABLE, config.DEFAULT_AUTH_DIR_WRITEABLE, config.DEFAULT_AUTH_DIR_DELETABLE)[0]
-#         try :
-#             with transaction.atomic() :
-#                 for userinfo in UserInfo.objects.filter(username__in=ids) :
-#                     userAuthority = None
-#                     try :
-#                         userAuthority = UserAuthority.objects.get(username=userinfo, file_id=index)
-#                         if (readable  is not None and userAuthority.readable == readable) or \
-#                            (writeable is not None and userAuthority.writeable == writeable) or \
-#                            (deletable is not None and userAuthority.deletable == deletable) :
-#                             continue
-#                          
-#                     except Exception as err :
-#                         userAuthority = UserAuthority(username=userinfo, file_id=index)
-#                          
-#                     if readable is not None :
-#                         userAuthority.readable = readable
-#                     if writeable is not None :
-#                         userAuthority.writeable = writeable
-#                     if deletable is not None :
-#                         userAuthority.deletable = deletable
-#                     userAuthority.save()
-#                     response['users'].append([
-#                                 userinfo.username,
-#                                 userinfo.getName(),
-#                                 userinfo.usertype,
-#                                 userAuthority.readable,
-#                                 userAuthority.writeable,
-#                                 userAuthority.deletable])
-#                      
-#         except Exception as err :
-#             response['code'] = -2
-#             response['message'] = err.__str__()
-#             response['users'].clear()
-#                 
-#     else :
-#         response['code'] = 1
-#         response['message'] = "최고 관리자만 가능합니다"
-#         
-#     return HttpResponse(json.dumps(response))
-#     
+def delDefaultAuthority(request, *args, **kwargs):
+    path = request.POST.get("path")
+    response = {
+        "code"      : 0,
+        "message"   : "",
+        "path"      : path,
+        "register"  : False,
+        "readable"  : config.DEFAULT_AUTH_DIR_READABLE,
+        "writeable" : config.DEFAULT_AUTH_DIR_WRITEABLE,
+        "deletable" : config.DEFAULT_AUTH_DIR_DELETABLE,
+        "inherit"   : config.DEFAULT_AUTH_DIR_INHERIT
+    }
+     
+    userinfo = UserInfo.getUserInfo(request)
+    fullpath = userinfo.getHomePath() + request.POST.get("path")
+     
+    if not userinfo.isSuper() :
+        response['code'] = 1
+        response['message'] = "최고 관리자만 가능합니다"
+    elif not Directory.delAuth(fullpath) : 
+        response["code"] = -1
+        response["message"] = "디렉토리 식별자 삭제 실패"
+         
+    return HttpResponse(json.dumps(response))
+
+def getUserAuthority(request, *args, **kwargs):
+    path = request.POST.get("path")
+    fileManager = CELLAR_FileManager(request)
+    response = {
+        "code"      : 0,
+        "message"   : "",
+        "path"      : path,
+        "register"  : False,
+        "readable"  : fileManager.isReadable(path),
+        "writeable" : fileManager.isWriteable(path),
+        "deletable" : fileManager.isDeletable(path)
+    }
+     
+    return HttpResponse(json.dumps(response))
+
+def getAuthorizedUsers(request, *args, **kwargs):
+    response = {
+        "code"      : 0,
+        "message"   : "",
+        "users"     : []
+    }
+     
+    userinfo = UserInfo.getUserInfo(request)
+    fullpath = userinfo.getHomePath() + request.POST.get("path")
+    authType = int(request.POST.get("type"))
+     
+    if userinfo.isSuper() :
+        file_id = index.dir_get(fullpath)
+        if file_id is not None :
+            for user in UserAuthority.objects.filter(file_id=file_id)  :
+                if      authType & 4 and not user.readable     : continue
+                elif    authType & 2 and not user.writeable    : continue
+                elif    authType & 1 and not user.deletable    : continue
+                 
+                response['users'].append([user.username.username,
+                                          user.username.getName(),
+                                          user.username.usertype])
+    else :
+        response['code'] = 1
+        response['message'] = "최고 관리자만 가능합니다"
+         
+    return HttpResponse(json.dumps(response))
+
+def setAuthorizedUsers(request, *args, **kwargs):
+    response = {
+        "code"      : 0,
+        "message"   : "",
+        "users"     : []
+    }
+     
+    userinfo = UserInfo.getUserInfo(request)
+    fullpath = userinfo.getHomePath() + request.POST.get("path")
+    
+    ids         = request.POST.getlist("ids[]")
+    readable    = request.POST.get('readable')
+    readable    = (readable == "1", None)[readable == None]
+    writeable   = request.POST.get('writeable')
+    writeable   = (writeable == "1", None)[writeable == None]
+    deletable   = request.POST.get('deletable')
+    deletable   = (deletable == "1", None)[deletable == None]
+    if userinfo.isSuper() :         
+        file_id = index.dir_get(fullpath) 
+        if file_id is None :
+            file_id = Directory.setAuth(fullpath, config.DEFAULT_AUTH_DIR_INHERIT, config.DEFAULT_AUTH_DIR_READABLE, config.DEFAULT_AUTH_DIR_WRITEABLE, config.DEFAULT_AUTH_DIR_DELETABLE)[0]
+            
+        fileDescriptor = FileDescriptor.objects.get(file_id=file_id)
+        try :
+            with transaction.atomic() :
+                for authUser in UserInfo.objects.filter(username__in=ids) :
+                    userAuthority = None
+                    try :
+                        userAuthority = UserAuthority.objects.get(username=authUser, file_id=fileDescriptor)
+                        if (readable  is not None and userAuthority.readable == readable) or \
+                           (writeable is not None and userAuthority.writeable == writeable) or \
+                           (deletable is not None and userAuthority.deletable == deletable) :
+                            continue
+                          
+                    except Exception as err :
+                        userAuthority = UserAuthority(username=authUser, file_id=fileDescriptor)
+                          
+                    if readable is not None :
+                        userAuthority.readable = readable
+                    if writeable is not None :
+                        userAuthority.writeable = writeable
+                    if deletable is not None :
+                        userAuthority.deletable = deletable
+                    userAuthority.save()
+                    response['users'].append([
+                                authUser.username,
+                                authUser.getName(),
+                                authUser.usertype,
+                                userAuthority.readable,
+                                userAuthority.writeable,
+                                userAuthority.deletable])
+                      
+        except Exception as err :
+            response['code'] = -2
+            response['message'] = err.__str__()
+            response['users'].clear()
+                 
+    else :
+        response['code'] = 1
+        response['message'] = "최고 관리자만 가능합니다"
+         
+    return HttpResponse(json.dumps(response))
 
 def userCreate(params, isSuper = False) :
     response = {
@@ -913,8 +886,8 @@ def userLogin(request, *args, **kwargs):
                     else  :
                         usertype = UserInfo.NORMAL
                        
-                    userInfo = UserInfo(username=username, usertype=usertype)
-                    userInfo.save()
+                    userinfo = UserInfo(username=username, usertype=usertype)
+                    userinfo.save()
                      
                 if request.POST.get("auto_login") : 
                     request.session.set_expiry(86400 * 365 * 10)
@@ -939,56 +912,6 @@ def userLogin(request, *args, **kwargs):
 def uesrLogout(request, *args, **kwargs):
     logout(request)
     return redirect("/")
-#       
-# def user_group(request, *args, **kwargs): 
-#     context = { 'group' : [], 'user' : []}
-#     users = []
-#     if request.POST.get('user.group.update') :
-#         username = request.POST.get('username')
-#         groupname = request.POST.get('groupname')
-#         assign = request.POST.get('assign') == 'True' or request.POST.get('assign') == 'true'
-#           
-#         if assign :
-#             user = UserInfo.objects.get(username=username)
-#             group = UserInfo.objects.get(username=groupname)
-#             userGroup = UserGroups(user=user, group=group)
-#             userGroup.save()
-#         else :
-#             userGroup = UserGroups.objects.get(user=username, group=groupname)
-#             userGroup.delete()
-#           
-#         if request.is_ajax() :
-#             return HttpResponse({"username" : username, "groupname" : groupname, "assign" : assign })
-#         else :
-#             users = UserInfo.objects.filter(username=username)
-#     else :
-#         search_term = request.POST.get("user.group.search.term")
-#         if search_term and request.POST.get('user.group.search') :
-#             users = UserInfo.objects.filter(username__contains=search_term, usertype__in=[UserInfo.NORMAL])
-#         else :
-#             users = UserInfo.objects.filter(usertype__in=[UserInfo.NORMAL])
-#           
-#     index = 0
-#     groupIndex = {}
-#     groups = list(UserInfo.objects.filter(usertype=UserInfo.GROUP))
-#     for group in groups :
-#         groupIndex[group.username] = index
-#         index = index + 1
-#         context['group'].append([index, group.username])
-#           
-#     for userinfo in users :
-#         auth_user = User.objects.get(username=userinfo.username)
-#         user = {'username' : userinfo.username, 'first_name' : auth_user.first_name, 'last_name' : auth_user.last_name, 'assign' : [] }
-#         for group in groups :
-#             user['assign'].append([group.username, False])
-#           
-#         userGroups = UserGroups.objects.filter(user=userinfo.username)
-#         for userGroup in userGroups :
-#             user['assign'][groupIndex[userGroup.group.username]][1] = True
-#           
-#         context['user'].append(user)
-#     return render(request, "user_group.html", {'user_group' : context})        
-# 
 
 def userDelete(request, *args, **kwargs):
     response = {

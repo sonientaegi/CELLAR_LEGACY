@@ -8,7 +8,8 @@ Index will be unique identifier of targets serving by CELLAR.
 
 import os.path
 
-from SonienStudio.log   import error, ok
+from CELLAR import config
+from SonienStudio.log   import error, ok, info
 
 
 INDEX_FILE = ".file_id.CELLAR"
@@ -23,7 +24,7 @@ def dir_get(fullPath):
         file.close()
         return file_id
           
-    except IOError as err:
+    except Exception as err :
         # error("index.dir.get : " + err.__str__())
         return None
 
@@ -37,7 +38,7 @@ def dir_set(fullPath, file_id):
         file.close()
         return True
     
-    except IOError as err :
+    except Exception as err :
         error("index.dir.set : " + err.__str__())
         return False    
     
@@ -50,8 +51,8 @@ def dir_del(fullPath):
         os.remove(indexPath)
         ok("index.dir.del : " + fullPath )
         return True
-    except IOError as err :
-        error("index.dir.del : " + err.__str__())
+    except Exception as err :
+        # error("index.dir.del : " + err.__str__())
         return False
      
 def dir_reset(fullPath = None):
@@ -59,10 +60,13 @@ def dir_reset(fullPath = None):
     Delete any or children index files of fullPath.
     @param fullPath replaces with ROOT if it is None.:  
     """    
-    global config
+    
     if fullPath is None :
         fullPath = config.ROOT
-
+        
+    if fullPath == config.ROOT :
+        info("index.dir.reset.full : start")
+    
     dir_del(fullPath)            
     for child in os.listdir(fullPath) :
         try : 
@@ -70,7 +74,10 @@ def dir_reset(fullPath = None):
             if os.path.isfile(childPath) : continue
             
             dir_reset(childPath)
-        except IOError as err:  
+        except Exception as err :  
             error("index.dir.reset : " + err.__str__())
-
+    
+    if fullPath == config.ROOT :
+        ok("index.dir.reset.full : finished")
+        
     return True

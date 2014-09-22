@@ -52,19 +52,19 @@ def general(request, *args, **kwargs):
 
 def userNew(request, *args, **kwargs):
     context = {}
-    userInfo = UserInfo.getUserInfo(request)
+    userinfo = UserInfo.getUserInfo(request)
     
     if request.POST.get("signup") :
-        response = userCreate(request.POST, userInfo.isSuper())
+        response = userCreate(request.POST, userinfo.isSuper())
        
         if response["code"] == 0 :
             context["code"]     = 0
             context["message"]  = "사용자 {0} 이(가) 등록되었습니다.".format(response["username"])
         else :
-            response["isSuper"] = userInfo.isSuper()
+            response["isSuper"] = userinfo.isSuper()
             return HttpResponse(render(request, "admin_user_new.html", response ))
         
-    context["isSuper"]  = userInfo.isSuper()
+    context["isSuper"]  = userinfo.isSuper()
     return HttpResponse(render(request, "admin_user_new.html", context))
 
 def userEdit(request, *args, **kwargs):

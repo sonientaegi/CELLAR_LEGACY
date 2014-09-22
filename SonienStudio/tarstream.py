@@ -31,7 +31,7 @@ class TarStream :
             target[i] = value 
             
     @classmethod
-    def setSystemEncidiong(cls, encoding):
+    def setSystemEncoding(cls, encoding):
         cls._encoding = encoding
     
     @staticmethod
@@ -144,7 +144,7 @@ class TarStream :
                         
     def __iter__(self):
         if self._filelist.__len__() == 0 :
-            raise AssertionError("대상이 없잖어 대상이!")
+            raise AssertionError("TarStream can not find target file.")
         
         # 3. Null Block 추가
         for i in range(0, 2) :
@@ -162,19 +162,6 @@ class TarStream :
     def __getitem__(self, key):
         # 지원하지 않음
         raise IndexError
-#         block = self._currentFile.read(TarStream.BLOCK_SIZE)
-#         if block.__len__() <= 0 :
-#             self._currentFile.close()
-#             self._currentFile = self._iter_file.__next__()
-#             self._currentFile.seek(0)
-#             return self.__getitem__(key)
-#         
-#         if block.__len__() < TarStream.BLOCK_SIZE :
-#             dummy = bytearray(TarStream.BLOCK_SIZE)
-#             TarStream.arrayCopy(block, dummy, 0)
-#             block = dummy
-#         
-#         return block
     
     def __next__(self):
         block = self._currentFile.read(TarStream.BLOCK_SIZE * self._blocks)
@@ -193,49 +180,3 @@ class TarStream :
             block = bytes(dummy)
            
         return block
-    
-#     def __next__(self):
-#         block = self._currentFile.read(TarStream.BLOCK_SIZE)
-#         if block.__len__() <= 0 :
-#             self._currentFile.close()
-#             self._currentFile = self._iter_file.__next__()
-#             if self._currentFile == None :
-#                 raise StopIteration
-#             else :
-#                 return self.__next__()
-#            
-#         if block.__len__() < TarStream.BLOCK_SIZE :
-#             dummy = bytearray(TarStream.BLOCK_SIZE)
-#             TarStream.arrayCopy(block, dummy, 0)
-#             block = bytes(dummy)
-#            
-#         return block
-
-#     def __next__(self):
-#         blocks = bytearray(TarStream.BLOCK_SIZE * self._blocks)
-#         for i in range(0, self._blocks) :
-#             block = self._getNextBlock() 
-#             if block :
-#                 TarStream.arrayCopy(block, blocks, i * TarStream.BLOCK_SIZE)
-#         
-#         if len(blocks) :                
-#             return bytes(blocks)
-#         else :
-#             raise StopIteration
-            
-#     def _getNextBlock(self) :
-#         block = self._currentFile.read(TarStream.BLOCK_SIZE)
-#         if block.__len__() <= 0 :
-#             self._currentFile.close()
-#             self._currentFile = self._iter_file.__next__()
-#             if self._currentFile == None :
-#                 return None
-#             else :
-#                 return self._getNextBlock()
-#           
-#         if block.__len__() < TarStream.BLOCK_SIZE :
-#             dummy = bytearray(TarStream.BLOCK_SIZE)
-#             TarStream.arrayCopy(block, dummy, 0)
-#             block = bytes(dummy)
-#           
-#         return block

@@ -9,16 +9,16 @@
 		<form class="align_center_flow_vertical" method="post" action="/user/login" data-ajax="false">{% csrf_token %}
 			<input name="user.login" value="true" type="hidden" />
 			{% if user_login.redirectURL %}
-				<input type="hidden" name="redirectURL" id="redirectURL" value="{{ user_login.redirectURL | default:'/' }}">
+				<input type="hidden" name="redirectURL" id="redirectURL" value="{{ userLogin.redirectURL | default:'/' }}">
 			{% endif %}
 			<input type="hidden" name="isReady" value="true">
 			<table>
-				<tr><td style="padding-right: 10px;">아이디&nbsp;</td><td><input type="text" id="username" name="username" value="{{ user_login.username | default:'' }}"></td></tr>
+				<tr><td style="padding-right: 10px;">아이디&nbsp;</td><td><input type="text" id="username" name="username" value="{{ userLogin.username | default:'' }}"></td></tr>
 				<tr><td style="padding-right: 10px;">암호</td><td><input type="password" id="passowrd" name="password"></td></tr>
 				<tr><td style="padding-right: 10px;">자동 로그인</td><td><input type="checkbox" id="auto_login" name="auto_login" /></td></tr>
 				<tr><td colspan="2" align="center"><input type="submit" value="로그인"></td></tr>
 			</table>
-			<div>{{ user_login.message | default:"" }}</div>
+			<div>{{ userLogin.message | default:"" }}</div>
 		</form>
 	</div>
 </div>

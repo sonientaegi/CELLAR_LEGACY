@@ -14,8 +14,6 @@
 			var node 	= this;
 			var header 	= $("<h1>" + title + "</h1>");
 			header.click(function(event) {
-				console.log("header click : " + event.offsetX);
-				
 				if(event.offsetX <= setting.directree_toggle_size) {
 					node.nodeHelper("toggle");
 				}
@@ -54,7 +52,6 @@
 			
 			var nodes = Directree.instance.data("sonienNode");
 			for(var i = 0; i < children.length; i++) {
-				console.log("Directree.fill " + children[i][1] + " " + children[i][1].length);
 				var childNode = parentNode.nodeHelper("addChild", children[i]);
 				Directree._refresh(childNode);
 			}
@@ -102,8 +99,7 @@
 		},
 		
 		_callbackContextMenu : function(key, options) {
-			var data = WidgetHelper.getData(this);
-			console.log("ContextMenu " + key + " on " + data[0][1]); 
+			var data = WidgetHelper.getData(this); 
 			switch(key) {
 			{% if user.is_superuser %} 	
 			case "auth_read" 	:
@@ -180,7 +176,6 @@
 		},
 		
 		_callbackCreate : function(node, data) {
-			// Home 제외 하고 나머지  inset false
 			node.css("margin-top", "-1px");
 			var header = node.find("h1").first();
 			var childrenContainer = node.nodeHelper("childrenContainer");
@@ -230,9 +225,8 @@
 			
 			childrenContainer.css("margin", "0px");
 			childrenContainer.css("margin-left", "10px");
-			
 			childrenContainer.parent().css("padding", "0px");
-			// childrenContainer.parent().css("padding-bottom", "10px");
+			
 			node.collapsible("option", "mini", true);			// mini 	: Collapsible 설정 
 			node.collapsible("option", "inset", true);			// inset	: Collapsible 섧정
 			node.collapsible("option", "expandedIcon", "minus");
@@ -270,7 +264,6 @@
 			var data = WidgetHelper.getData(node);
 			
 			if(code == 0) {
-				console.log("onChangeDirName " + data);
 				node.find("a").first().text(dst);
 				data[0][0] = dst;
 				data[0][1] = dstPath;
@@ -304,8 +297,8 @@
 				return;
 			}
 			
-			console.log("Directree._callbackCreateDir " + newPath + " " + newPath.length);
-			parentNode.nodeHelper("addChild", [dirName, newPath, []]);
+			var childNode = parentNode.nodeHelper("addChild", [dirName, newPath, []]);
+			Directree._refresh(childNode);
 		},
 		
 		_callbackDeleteDir : function(code, targetPath) {
@@ -318,41 +311,30 @@
 				return;
 			}
 			
-			console.log("Directree._callbackDeleteDir " + targetPath);
 			Directree.instance.treeHelper("remove", targetPath);
 		},
 		
-		_refresh : function(parentNode) {
-			/*
-			var rgb = 55 + 15 * parentNode.nodeHelper("getDepth");
-			if(rgb > 145) {
-				rgb = 145;
-			}
-			*/
-			var depth = parentNode.nodeHelper("getDepth");
+		_refresh : function(node) {
+			var depth = node.nodeHelper("getDepth");
 			var rgb = 155 - ( 100 * Math.pow(0.92, depth) ) | 0;
-			parentNode.find("h1").find("a").css("background-color", "rgb(" + rgb + "," + rgb + "," + rgb + ")");
+			node.find("h1").find("a").css("background-color", "rgb(" + rgb + "," + rgb + "," + rgb + ")");
 			
-			var children = parentNode.nodeHelper("children");
+			var children = node.nodeHelper("children");
 			for(var i = 0; i < children.length; i++) {
-				console.log("depth of " + WidgetHelper.getData(children[i][1])[0][0] + " : " + children[i][1].nodeHelper("getDepth"));
 				Directree._refresh(children[i][1]);
 			}
 		},
 		
 		updateDirectories : function(srcPath, dstPath) {
-			// console.log("updateDirectories " + "start with " + srcPath + " to " + dstPath);
 			var length = srcPath.length;
 			var children = Directree.instance.data("sonienNode");
 			for(var i = 0; i < children.length; i++) {
 				if(children[i][0][1].indexOf(srcPath) == 0) {
 					children[i][0][1] = dstPath + children[i][0][1].slice([length]);
 				}
-				// console.log("updateDirectories " + children[i][0][1]);
 			}
 			
 			Directree.instance.treeHelper("sort");
-			// console.log("updateDirectories " + "finish");
 		}
 	}
 	Directree.setOnClickDirectoryListener(Directree.browse);
@@ -360,7 +342,6 @@
 	Directree.instance.treeHelper("create", Directree.render);	
 	Directree.instance.treeHelper("evaluator", Directree.evaluator);
 	Directree.instance.collapsibleset("option", "inset", false);
-	// Directree.instance.collapsibleset("option", "corners", true);		// Corner 	: Collapsible-set 설정
 	Directree.instance.treeHelper("toggling", false); 				
 	Directree.instance.treeHelper("callback", "create", Directree._callbackCreate);
 	Directree.instance.treeHelper("callback", "add", 	Directree._callbackAdd);
@@ -376,8 +357,6 @@
 		function(data, status) {
 			var jsonResponse = JSON.parse(data);
 			var children = jsonResponse['node'];
-			// console.log("Root depth : " + Directree.root.nodeHelper("getDepth"));
-			// console.log("Root depth : " + Directree.root.data("sonienDepth"));
 			for(var i = 0; i < children.length; i++) {
 				var childNode = Directree.root.nodeHelper("addChild",children[i]);
 			}

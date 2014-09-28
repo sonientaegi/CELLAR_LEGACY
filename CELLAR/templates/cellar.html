@@ -143,12 +143,18 @@ var CELLAR = {
 	 */
 	drop_on_directree : function(event, node) {
 		event.preventDefault();
-		var dstPath	= WidgetHelper.getData(node)[0][1];
-		var target 	= JSON.parse(event.originalEvent.dataTransfer.getData("target"));
-		console.log("index dropOn " + target[0] + " | " + target[1]);
+		var dstPath		= WidgetHelper.getData(node)[0][1];
+		var targetData 	= event.originalEvent.dataTransfer.getData("target"); 
+		if(targetData == null || targetData == "") {
+			return false;
+		}
+		
+		var target 		= JSON.parse(targetData);
 		if(target[0] == 0) {
-			// 디렉토리 인 경우
-			Transaction.moveDir(target[1], dstPath);
+			// 디렉토리 인 경우, 자기 자신 과 Parent 가 아닌 경우에만 이동 함.			
+			if(dstPath != target[1] && !node.nodeHelper("findChild", target[1]) && node.nodeHelper("findParent", target[1]) == null) {
+				Transaction.moveDir(target[1], dstPath);
+			}
 		}
 		else {
 			// 파일 인 경우

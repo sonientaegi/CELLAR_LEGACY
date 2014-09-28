@@ -218,6 +218,11 @@ var NodeHelper = {
 		return node;
 	},
 	
+	key : function(node) {
+		var evaluator = WidgetHelper.getEvaluator(node);
+		return evaluator(WidgetHelper.getData(node));
+	},
+	
 	getTree : function(node) {
 		return node.data("sonienTree");
 	},
@@ -326,12 +331,36 @@ var NodeHelper = {
 		return data[2].length > 0;
 	},
 	
+	findChild : function(node, key) {
+		var children = NodeHelper.children(node);
+		var index = Sonien.binarySearch(children, key, WidgetHelper.getEvaluator(node)); 
+		if(index < 0 ) {
+			return null;
+		}
+		else {
+			return children[index];
+		}
+	},
+	
 	parent : function(node) {
 		if(NodeHelper.isRoot(node)) {
 			return null;
 		}
 		else {
 			return node.parent().parent().parent();
+		}
+	},
+	
+	findParent : function(node, key) {
+		var parent = NodeHelper.parent(node);
+		if(parent == null) {
+			return null;
+		}
+		else if(NodeHelper.key(parent) == key) {
+			return parent;
+		}
+		else {
+			return NodeHelper.findParent(parent, key);
 		}
 	},
 	
@@ -654,8 +683,12 @@ var RowHelper = {
 			return NodeHelper.children(this);
 		case "hasChild" :
 			return NodeHelper.hasChild(this);
+		case "findChild" :
+			return NodeHelper.findChild(this, arguments[1]);
 		case "parent" :
 			return NodeHelper.parent(this);
+		case "findParent" :
+			return NodeHelper.findParent(this, arguments[1]);
 		case "isRoot" :
 			return NodeHelper.isRoot(this);
 		case "attachTo" :

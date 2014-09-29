@@ -120,7 +120,7 @@ var CELLAR = {
 	
 	dragStart_directree : function(event, node) {
 		var data = WidgetHelper.getData(node);
-		var target = [0, data[0][1]];
+		var target = [0, data[0][1], data[0][0]];
 		console.log("index dragStart " + "D" + " | " + target[1]);
 		event.originalEvent.dataTransfer.setData("target", JSON.stringify(target));
 	},
@@ -151,8 +151,8 @@ var CELLAR = {
 		
 		var target 		= JSON.parse(targetData);
 		if(target[0] == 0) {
-			// 디렉토리 인 경우, 자기 자신 과 Parent 가 아닌 경우에만 이동 함.			
-			if(dstPath != target[1] && !node.nodeHelper("findChild", target[1]) && node.nodeHelper("findParent", target[1]) == null) {
+			// 디렉토리 인 경우, 자기 자신 과 Parent 가 아닌 경우에만 이동 함.	
+			if(dstPath != target[1] && !node.nodeHelper("findChild", dstPath + target[2] + "/") && node.nodeHelper("findParent", target[1]) == null) {
 				Transaction.moveDir(target[1], dstPath);
 			}
 		}

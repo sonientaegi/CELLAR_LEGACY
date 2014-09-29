@@ -17,9 +17,14 @@ var Sonien = {
 
 			// adjust search area
 			if (value < middleValue) {
-				stopIndex = middle - 1;
+				if((stopIndex = middle - 1) < 0) {
+					stopIndex = 0;
+				};
+				
 			} else if (value > middleValue) {
-				startIndex = middle + 1;
+				if((startIndex = middle + 1) >= array.length) {
+					startIndex = array.length - 1;
+				};
 			}
 
 			// recalculate middle

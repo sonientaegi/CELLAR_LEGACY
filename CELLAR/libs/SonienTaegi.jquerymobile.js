@@ -401,11 +401,11 @@ var NodeHelper = {
 	},
 	
 	_detach : function(node) {		
-		// debugger;
 		var parentNode 	= NodeHelper.parent(node);
 		var dataSet		= WidgetHelper.getData(parentNode)[2];
 		var evaluator	= WidgetHelper.getEvaluator(parentNode);
-		var index		= Sonien.binarySearch(dataSet, evaluator(WidgetHelper.getData(node)), evaluator);
+		var key			= NodeHelper.key(node);
+		var index		= Sonien.binarySearch(dataSet, key, evaluator);
 		dataSet.splice(index, 1);
 		node.detach();
 		

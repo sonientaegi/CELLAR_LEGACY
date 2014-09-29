@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script type="text/javascript" src="SonienTaegi.js"></script>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+<script type="text/javascript">
+var test = function(count) {
+	var numbers = Array(count);
+	document.write("CASE " + count + "<BR>");
+	document.write("Initialize<BR>");
+	for(var i = 0; i < numbers.length; i++) {
+		numbers[i] = Math.round(Math.random() * 1000);
+		document.write(numbers[i]);
+		document.write("&nbsp;");
+	}
+	document.write("<BR><BR>");
+	
+	Quicksort.sort(numbers);
+	document.write("Sorted<BR>");
+	var lastValue = 0;
+	var valid = true;
+	for(var i = 0; valid && i < numbers.length; i++) {
+		document.write(numbers[i]);
+		document.write("&nbsp;");
+		
+		if(lastValue > document[i]) {
+			valid = false;
+		}
+		lastValue = document[i];
+	}
+	document.write("<BR>");
+	if(!valid) {
+		document.write("<font style='color : red;'>");
+	}
+	document.write("result : " + valid + "<BR>");
+	if(!valid) {
+		document.write("</font>");
+	}
+};
+
+for(var i = 0; i < 100;  i++) {
+	document.write("<p style='margin : 20px; border-width : 1px; border-style : solid; padding : 10px;'>");
+	test(Math.round(Math.random() * 1000));
+	document.write("</p>");
+}
+</script>
+</body>
+</html>

@@ -77,13 +77,11 @@ var TreeHelper = {
 		var index 		= Sonien.binarySearch(nodes, key, evaluator);
 		
 		if(index >= 0) {
-			var children = nodes[index][2];
-			nodes.splice(index, 1);
-
 			// 재귀법으로 하위 노드도 모두 삭제
-			for(var i = 0; i < children.length; i++) {
-				TreeHelper._removeNode(tree, evaluator(children[i]));
+			for(var i = 0; i < nodes[index][2].length; i++) {
+				TreeHelper._removeNode(tree, evaluator(nodes[index][2][i]));
 			}
+			nodes.splice(index, 1);
 		}
 	},
 	
@@ -116,14 +114,6 @@ var TreeHelper = {
 		return root;
 	},
 	
-	removeNode : function(tree, key) {
-		var node = TreeHelper.findNode(tree, key);
-		if(node != null) {
-			node.remove();
-			TreeHelper._removeNode(tree, key);
-		}
-	},
-	
 	setCallbackAddNode : function(tree, cb) {
 		tree.data("sonienCbAddNode", cb);
 		return tree;
@@ -134,7 +124,7 @@ var TreeHelper = {
 	},
 	
 	setCallbackRemoveNode : function(tree, cb) {
-		tree.data("sonienCbRemoveNode");
+		tree.data("sonienCbRemoveNode", cb);
 		return tree;
 	},
 	
@@ -278,6 +268,31 @@ var NodeHelper = {
 		}
 		
 		return child;
+	},
+	
+	removeChild : function(node, childNode) {
+		var dataSet		= WidgetHelper.getData(node)[2];
+		var evaluator	= WidgetHelper.getEvaluator(node);
+		var key			= NodeHelper.key(childNode);
+		if(key == null) { 
+			return false;
+		}
+		var index		= Sonien.binarySearch(dataSet, key, evaluator);
+		if(index < 0) {
+			return false;
+		}
+		
+		dataSet.splice(index, 1);
+		childNode.remove();
+		
+		var tree = NodeHelper.getTree(node);
+		TreeHelper._removeNode(tree, key);
+		
+		var cb = TreeHelper.getCallbackRemoveNode(tree);
+		if(cb) {
+			cb(node, tree);
+		}
+		return true;
 	},
 	
 	toggle : function(node) {
@@ -641,9 +656,9 @@ var RowHelper = {
 			break;
 		case "find" :
 			return TreeHelper.findNode(this, arguments[1]);
-		case "remove" :
-			TreeHelper.removeNode(this, arguments[1]);
-			break;
+//		case "remove" :
+//			TreeHelper.removeNode(this, arguments[1]);
+//			break;
 		case "addRoot" :
 			return TreeHelper.addRoot(this, arguments[1]);
 		}
@@ -674,6 +689,8 @@ var RowHelper = {
 			return NodeHelper.getDepth(this);
 		case "addChild" :
 			return NodeHelper.addChild(this, arguments[1]);
+		case "removeChild" :
+			return NodeHelper.removeChild(this, arguments[1]);
 		case "toggle" :
 			return NodeHelper.toggle(this);
 		case "isCollapsed" :

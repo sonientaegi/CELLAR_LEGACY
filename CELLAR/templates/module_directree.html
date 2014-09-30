@@ -236,9 +236,10 @@
 			node.collapsible("option", "collapsedIcon", "plus");
 		},
 		
-		_callbackRemove : function(node) {
-			if(!node.nodeHelper("hasChild")) {
-				node.collapsible("option", "collapsedIcon", "na");
+		_callbackRemove : function(parentNode, tree) {
+			if(!parentNode.nodeHelper("hasChild")) {
+				parentNode.collapsible("option", "collapsedIcon", "na");
+				parentNode.nodeHelper("toggle");
 			}
 		},
 		
@@ -302,12 +303,11 @@
 				return;
 			}
 		
-			var node = Directree.instance.treeHelper("find", targetPath);
+			var node 		= Directree.instance.treeHelper("find", targetPath);
 			if(node == null) {
 				return;
 			}
-			
-			Directree.instance.treeHelper("remove", targetPath);
+			node.nodeHelper("parent").nodeHelper("removeChild", node);
 		},
 		
 		_refresh : function(node) {

@@ -30,12 +30,13 @@ def general(request, *args, **kwargs):
         config.HOME_GUEST       = request.POST.get("home_guest")
         config.USING_GUEST      = isChecked(request,"using_guest")
         config.LOGIN_CAMPAIGN   = isChecked(request,"login_campaign")
+        config.INDEX_FILE       = request.POST.get("index_file")       
           
         config.DEFAULT_AUTH_DIR_READABLE    = isChecked(request,"default_readable") 
         config.DEFAULT_AUTH_DIR_WRITEABLE   = isChecked(request,"default_writeable")
         config.DEFAULT_AUTH_DIR_DELETABLE   = isChecked(request,"default_deletable")
         config.DEFAULT_AUTH_DIR_INHERIT     = isChecked(request,"default_inherit")
-          
+        
         config.save()
           
         pageYOffset = request.POST.get("pageYOffset")

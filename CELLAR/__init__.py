@@ -11,6 +11,7 @@ class __Config :
         self.ROOT               = ""
         self.HOME_GUEST         = ""
         self.HOME_USER          = ""
+        self.INDEX_FILE         = ".file_id.CELLAR"
                
         self.DEFAULT_AUTH_DIR_READABLE  = True
         self.DEFAULT_AUTH_DIR_WRITEABLE = True
@@ -69,14 +70,15 @@ class __Config :
             "DEFAULT_AUTH_DIR_WRITEABLE"    : self.DEFAULT_AUTH_DIR_WRITEABLE,
             "DEFAULT_AUTH_DIR_DELETABLE"    : self.DEFAULT_AUTH_DIR_DELETABLE,
             "USING_GUEST"                   : self.USING_GUEST,
-            "LOGIN_CAMPAIGN"                : self.LOGIN_CAMPAIGN
+            "LOGIN_CAMPAIGN"                : self.LOGIN_CAMPAIGN,
+            "INDEX_FILE"                    : self.INDEX_FILE
         }
         
         
         fp = open(os.path.join(BASE_DIR, "CELLAR/CELLAR.conf"),  "w")
         fp.write(json.dumps(profile))
         fp.close()
-config = __Config()
 
+config = __Config()
 from CELLAR             import views
 

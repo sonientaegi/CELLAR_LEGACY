@@ -12,14 +12,14 @@ from CELLAR import config
 from SonienStudio.log   import error, ok, info
 
 
-INDEX_FILE = ".file_id.CELLAR"
+# INDEX_FILE = ".file_id.CELLAR"
 
 def dir_get(fullPath):
     """
     Get file_id of index file in fullPath. Will return None unless there is an file_id file.
     """  
     try :
-        file = open(os.path.normpath(fullPath + INDEX_FILE))
+        file = open(os.path.normpath(fullPath + config.INDEX_FILE))
         file_id = int(file.read())
         file.close()
         return file_id
@@ -33,7 +33,7 @@ def dir_set(fullPath, file_id):
     Set or update file_id of index file in fullPath. Will return False unless it is done successfully. 
     """
     try :
-        file = open(os.path.normpath(fullPath + INDEX_FILE), mode='w')
+        file = open(os.path.normpath(fullPath + config.INDEX_FILE), mode='w')
         file.write(str(file_id))
         file.close()
         return True
@@ -46,7 +46,7 @@ def dir_del(fullPath):
     """
     Delete index file of fullPath. Will return False unless it is done successfully.
     """
-    indexPath = os.path.normpath(fullPath + INDEX_FILE)
+    indexPath = os.path.normpath(fullPath + config.INDEX_FILE)
     try :
         os.remove(indexPath)
         ok("index.dir.del : " + fullPath )

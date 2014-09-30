@@ -1,7 +1,6 @@
 import os.path
 
-from CELLAR             import authority
-from CELLAR.index       import INDEX_FILE
+from CELLAR             import authority, config
 from CELLAR.models      import UserInfo
 from SonienStudio.file  import FileManager
 
@@ -58,7 +57,7 @@ class CELLAR_FileManager(FileManager):
             
             files = []
             for file in fileList[1] :
-                if file[0] == INDEX_FILE :
+                if file[0] == config.INDEX_FILE :
                     continue
                 else :
                     files.append(file)

@@ -54,7 +54,7 @@
 	
 	<div class="reflow_table_row">
 		<p>기본 권한</p>
-		<fieldset class="ui-mini" data-role="controlgroup" data-type="horizontal" style="-webkit-box-flex: 1;">
+		<fieldset class="ui-mini" data-role="controlgroup" data-type="horizontal" style="-webkit-box-flex: 1; margin-right : 0.5em;">
 			<input type="checkbox" name="default_readable" 	id="default_readable"
 					{% if config.DEFAULT_AUTH_DIR_READABLE %}checked="checked"{% endif %}>
 			<label for="default_readable">읽기</label>
@@ -69,6 +69,12 @@
 			<label for="default_inherit">상속</label>
 		</fieldset>
 		<p>( 권한 미 지정 시 적용 됨 )</p>
+	</div>
+	
+	<div class="reflow_table_row">
+		<p>경로 식별자</p>
+	  	<input id="index_file" type="text" name="index_file" value="{{config.INDEX_FILE}}">
+	  	<p>( 경로 : 변경 시 기존 권한이 모두 무시 됩니다! )</p>
 	</div>
 	
 	<div class="reflow_table_row">

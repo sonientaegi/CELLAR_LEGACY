@@ -4,6 +4,7 @@ var Transaction = {
 		Transaction._callbackChangeDirName.push(cb);
 	},
 	changeDirName : function(srcPath, dst) {
+		Blocker.acquire();
 		console.log("changeDirName : src=" + srcPath + " dst=" + dst);
 		$.post("/util/rename",
 			{ 
@@ -18,6 +19,7 @@ var Transaction = {
 				}
 				
 				console.log("changeDirName : " + jsonResponse["message"]);
+				Blocker.release();
 			}
 		);	
 	},
@@ -27,6 +29,7 @@ var Transaction = {
 		Transaction._callbackChangeFileGroupName.push(cb);
 	},
 	changeFileGroupName : function(srcGroup, srcExts, dst) {
+		Blocker.acquire();
 		console.log("changeFileGroupName : src=" + srcGroup + " dst=" + dst);
 		$.post("/util/renamegroup",
 			{ 
@@ -42,6 +45,7 @@ var Transaction = {
 				}
 				
 				console.log("changeDirName : " + jsonResponse["message"]);
+				Blocker.release();
 			}
 		);
 	},
@@ -51,6 +55,7 @@ var Transaction = {
 		Transaction._callbackMoveDir.push(cb);
 	},
 	moveDir : function(targetDir, dstPath) {
+		Blocker.acquire();
 		console.log("moveDir : target=" + targetDir + " dstPath=" + dstPath);
 		$.post("/util/move",
 			{ 
@@ -66,6 +71,7 @@ var Transaction = {
 				}
 				
 				console.log("moveDir : " + jsonResponse["message"]);
+				Blocker.release();
 			}
 		);
 	},
@@ -75,6 +81,7 @@ var Transaction = {
 		Transaction._callbackMoveFile.push(cb);
 	},
 	moveFile : function(targetGroup, targetExts, dstPath) {
+		Blocker.acquire();
 		console.log("moveFile : target=" + targetGroup + "(" + targetExts + ") dstPath=" + dstPath);
 		var targets = [];
 		for(var i = 0 ; i < targetExts.length; i++) {
@@ -92,6 +99,7 @@ var Transaction = {
 					Transaction._callbackMoveDir[i](jsonResponse["code"], targetGroup, dstPath, jsonResponse["result"]);
 				}
 				console.log("moveFile : " + jsonResponse["message"]);
+				Blocker.release();
 			}
 		);
 	},
@@ -101,6 +109,7 @@ var Transaction = {
 		Transaction._callbackCreateDir.push(cb);
 	},
 	createDir : function(path, name) {
+		Blocker.acquire();
 		console.log("createDir : " + path + name);
 		$.post("/util/createdir",
 			{ 
@@ -115,6 +124,7 @@ var Transaction = {
 					Transaction._callbackCreateDir[i](jsonResponse["code"], path, name, newPath);
 				}
 				console.log("createDir : " + jsonResponse["message"]);
+				Blocker.release();
 			}
 		);
 	}, 
@@ -124,6 +134,7 @@ var Transaction = {
 		Transaction._callbackDeleteDir.push(cb);
 	},
 	deleteDir : function(dirPath) {
+		Blocker.acquire();
 		console.log("deleteDir : " + dirPath);
 		$.post("/util/deletedir",
 			{ 
@@ -136,6 +147,7 @@ var Transaction = {
 					Transaction._callbackDeleteDir[i](jsonResponse["code"], jsonResponse["dirPath"]);
 				}
 				console.log("deleteDir : " + jsonResponse["message"]);
+				Blocker.release();
 			}
 		);
 	},
@@ -145,6 +157,7 @@ var Transaction = {
 		Transaction._callbackDeleteFiles.push(cb);
 	},
 	deleteFiles : function(groupPath, exts) {
+		Blocker.acquire();
 		console.log("deleteFiles : " + groupPath + " (" + exts + ")");
 		$.post("/util/deletefiles",
 			{ 
@@ -158,6 +171,7 @@ var Transaction = {
 					Transaction._callbackDeleteFiles[i](jsonResponse["code"], jsonResponse["groupPath"], jsonResponse["result"]);
 				}
 				console.log("deleteFiles : " + jsonResponse["message"]);
+				Blocker.release();
 			}
 		);
 	}

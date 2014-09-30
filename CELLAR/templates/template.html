@@ -162,6 +162,45 @@ var crsf_token = "{{csrf_token}}";
 {% endblock %}
 
 {% if not is_ajax %}
+<div id="blocker" style="width : 100%; height : 100%; z-index: 999; position: absolute;">
+	<h1>블록커 작동 중</h1>	
+</div>
+
+<script type="text/javascript">
+	/*
+		*** Notice! ***
+		
+		Blocker should be acquired or released by main thread. 
+		Neither Blocker nor JavaScript doesn't support multi-thread, blocker should be only called by main thread of browser.
+		Please remeber Worker is not allowed to access Blocker.
+	*/
+	var Blocker = {
+		_counter : 0,
+		
+		acquire : function(text) {
+			text = text || "on progress ...";
+			
+			if(Blocker._counter == 0) {
+				$("#blocker").show();
+				$.mobile.loading("show", {
+					text : text,
+					textVisible : true
+				});
+			}
+			Blocker._counter = Blocker._counter + 1; 
+		},
+		
+		release : function() {
+			Blocker._counter = Blocker._counter - 1;
+			if(Blocker._counter <= 0) {
+				Blocker._counter = 0
+				$("#blocker").hide();
+				$.mobile.loading("hide");
+			}
+		}
+	};
+	$("#blocker").hide();
+</script>		
 </body>
 </html>
 {% endif %}

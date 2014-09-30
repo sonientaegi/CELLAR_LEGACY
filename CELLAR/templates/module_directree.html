@@ -30,18 +30,14 @@
 		},
 		
 		browse : function(dir) {			
-			$.mobile.loading("show", {
-					text : "Browsing...",
-					textVisible : true
-				}
-			);
+			Blocker.acquire("Browsing ...");
 			$.post("/browse/directory", {
 					target				: dir,
 					csrfmiddlewaretoken : '{{csrf_token}}'
 				},
 				function(data, status) {
 					Directree.fill(dir, JSON.parse(data));
-					$.mobile.loading("hide");
+					Blocker.release();
 				}
 			);
 		},

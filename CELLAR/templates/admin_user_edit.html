@@ -10,6 +10,8 @@
 		else {
 			assign = "False";
 		}
+		
+		Blocker.acquire();
 		$.post(
 			"/administrator/user/edit",
 			{ 
@@ -23,7 +25,8 @@
 				if(status != "success") {
 					checkbox.checked = checkbox.checked;
 				}
-				checkbox.disabled = false;		
+				checkbox.disabled = false;
+				Blocker.release();
 			});
 		
 		return false;

@@ -406,6 +406,7 @@ var NodeHelper = {
 		var evaluator	= WidgetHelper.getEvaluator(parentNode);
 		var key			= NodeHelper.key(node);
 		var index		= Sonien.binarySearch(dataSet, key, evaluator);
+		
 		dataSet.splice(index, 1);
 		node.detach();
 		

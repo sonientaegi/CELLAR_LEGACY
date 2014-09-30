@@ -98,13 +98,7 @@ $("#auth_reset").on("click", function(event) {
 		"모든 권한 관련 데이터가 삭제되며 복구가 불가능 합니다.",
 		"정말 초기화 하시겠습니까?",
 		function() { 
-			$.mobile.loading( "show", {
-		        text: "권한을 초기화 중입니다",
-		        textVisible: true,
-		        theme: "a",
-		        textonly: false,
-		        html: ""
-			});
+			Blocker.acquire("권한을 초기화 중입니다...");
 			
 			$.post(
 				"/auth/reset",
@@ -123,7 +117,7 @@ $("#auth_reset").on("click", function(event) {
 					else {
 						console.log("권한이 초기화 되었습니다.");
 					}
-					$.mobile.loading( "hide" );
+					Blocker.release();
 				}
 			);
 		}
@@ -163,10 +157,7 @@ if($("#home_user").val() == "")	{
 };
 
 $("#form_admin").submit(function(event) {
-	$.mobile.loading("show", {
-		text : "저장 중...",
-		textVisible : true
-	});
+	Blocker.acquire("저장중...");
 	$("#pageYOffset").val(window.pageYOffset);
 });
 

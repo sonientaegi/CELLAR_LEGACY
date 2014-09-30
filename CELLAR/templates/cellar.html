@@ -83,11 +83,7 @@ var CELLAR = {
 	},
 	
 	browse : function(dir) {
-		$.mobile.loading("show", {
-				text : "Browsing...",
-				textVisible : true
-			}
-		);
+		Blocker.acquire("Browsing ...");
 		$.post("/browse", {
 			csrfmiddlewaretoken : crsf_token,
 			target : dir
@@ -95,20 +91,22 @@ var CELLAR = {
 		function(data, status) {
 			if(status != 'success') {
 				console.log("Browsing failed.");
-				return;
+				
 			}
-			var jsonResponse = JSON.parse(data);
-			Filelist.fill(dir, jsonResponse["filelist"]); 
-			Directree.fill(dir, jsonResponse["directree"]);
-			
-			if(jsonResponse["directree"]["node"].length > 0) {
-				var node = Directree.instance.treeHelper("find", dir);
-				node.nodeHelper("expand", true);
+			else {
+				var jsonResponse = JSON.parse(data);
+				Filelist.fill(dir, jsonResponse["filelist"]); 
+				Directree.fill(dir, jsonResponse["directree"]);
+				
+				if(jsonResponse["directree"]["node"].length > 0) {
+					var node = Directree.instance.treeHelper("find", dir);
+					node.nodeHelper("expand", true);
+				}
+				CELLAR.cwd = dir;
+				// $("#field_cwd").val(CELLAR.cwd);
+				$("#field_cwd").text(CELLAR.cwd);
 			}
-			CELLAR.cwd = dir;
-			// $("#field_cwd").val(CELLAR.cwd);
-			$("#field_cwd").text(CELLAR.cwd);
-			$.mobile.loading("hide");
+			Blocker.release();
 		});
 	},
 	
@@ -233,7 +231,7 @@ $( window ).on( "navigate", function( event, data ) {
 	}
 });
 
-console.log("CELLAR.Filelist - Start loading");
+// console.log("CELLAR.Filelist - Start loading");
 $("#content_filelist").load(
 	"/module/filelist", 
 	function(response, status, xhr) {
@@ -245,9 +243,10 @@ $("#content_filelist").load(
 		else {
 			console.log("CELLAR.Filelist - " + xhr.status + " " + xhr.statusText  );
 		}
+		Blocker.release();
 	});
 
-console.log("CELLAR.Directree - Start loading");
+// console.log("CELLAR.Directree - Start loading");
 $("#content_directory").load(
 	"/module/directree", 
 	function(response, status, xhr) {
@@ -260,6 +259,7 @@ $("#content_directory").load(
 		else {
 			console.log("CELLAR.Directree - " + xhr.status + " " + xhr.statusText  );
 		}
+		Blocker.release();
 	});
 
 $("#panel_right").on("panelbeforeopen", CELLAR.onPanelUpdate);
@@ -311,6 +311,9 @@ $("#page_CELLAR").on("pagecreate", function(event, ui) {
 			panelRight.panel("close");
 		}
 	});
+	
+	Blocker.acquire("Initializing...");
+	Blocker.acquire("Initializing...");
 });
 </script>
 {% endblock %}

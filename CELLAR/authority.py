@@ -14,8 +14,6 @@ from CELLAR                 import config, index
 from CELLAR.models          import FileDescriptor, UserGroups, UserAuthority
 from SonienStudio.file      import FileManager
 from SonienStudio.log       import error
-from pip._vendor.requests.packages.chardet.latin1prober import OTH
-
 
 class Directory :
     @staticmethod

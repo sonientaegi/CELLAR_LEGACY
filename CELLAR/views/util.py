@@ -454,7 +454,7 @@ def resetAllAuthority(request, *args, **kwargs) :
         "message"   : ""
     }
     
-    if not UserInfo.getUserInfo(request).isSuper() :
+    if not UserInfo.getUserInfo(request).isAdmin() :
         response['code']    = -1
         response['message'] = "권한 초기화는 최고 관리자만 가능합니다"
     else :
@@ -507,7 +507,7 @@ def setDefaultAuthority(request, *args, **kwargs):
     userinfo = UserInfo.getUserInfo(request)
     fullpath = userinfo.getHomePath() + request.POST.get("path")
 
-    if not userinfo.isSuper() :
+    if not userinfo.isAdmin() :
         response['code']    = -1
         response['message'] = "권한 초기화는 최고 관리자만 가능합니다"
     else :     
@@ -555,7 +555,7 @@ def delDefaultAuthority(request, *args, **kwargs):
     userinfo = UserInfo.getUserInfo(request)
     fullpath = userinfo.getHomePath() + request.POST.get("path")
      
-    if not userinfo.isSuper() :
+    if not userinfo.isAdmin() :
         response['code'] = 1
         response['message'] = "최고 관리자만 가능합니다"
     elif not Directory.delAuth(fullpath) : 
@@ -590,7 +590,7 @@ def getAuthorizedUsers(request, *args, **kwargs):
     fullpath = userinfo.getHomePath() + request.POST.get("path")
     authType = int(request.POST.get("type"))
      
-    if userinfo.isSuper() :
+    if userinfo.isAdmin() :
         file_id = index.dir_get(fullpath)
         if file_id is not None :
             for user in UserAuthority.objects.filter(file_id=file_id)  :
@@ -624,7 +624,7 @@ def setAuthorizedUsers(request, *args, **kwargs):
     writeable   = (writeable == "1", None)[writeable == None]
     deletable   = request.POST.get('deletable')
     deletable   = (deletable == "1", None)[deletable == None]
-    if userinfo.isSuper() :         
+    if userinfo.isAdmin() :         
         file_id = index.dir_get(fullpath) 
         if file_id is None :
             file_id = Directory.setAuth(fullpath, config.DEFAULT_AUTH_DIR_INHERIT, config.DEFAULT_AUTH_DIR_READABLE, config.DEFAULT_AUTH_DIR_WRITEABLE, config.DEFAULT_AUTH_DIR_DELETABLE)[0]
@@ -670,7 +670,7 @@ def setAuthorizedUsers(request, *args, **kwargs):
          
     return HttpResponse(json.dumps(response))
 
-def userCreate(params, isSuper = False) :
+def userCreate(params, isAdmin = False) :
     response = {
         "code"  : 0,
     }
@@ -683,10 +683,10 @@ def userCreate(params, isSuper = False) :
     memo        = params.get("memo")
           
     # 최고 관리자에 의해 등록되는 ID 는 E-MAIL 은 필요 없음
-    if not email and isSuper :
+    if not email and isAdmin :
         email = "" 
             
-    if is_group and not isSuper :
+    if is_group and not isAdmin :
         response["code"]    = -2
         response["message"] = "그룹 사용자는 관리자만이 추가할 수 있습니다."
     elif not re.match("[a-zA-Z0-9]{6,}|@[a-zA-Z0-9]{5,}", username) :
@@ -695,7 +695,7 @@ def userCreate(params, isSuper = False) :
     elif is_group and not re.match("@.*", username) :
         response["code"]    = -4
         response["message"] = "그룹 사용자의 아이디는 @로 시작해야합니다."
-    elif username and password and first_name and ( email or isSuper ) :
+    elif username and password and first_name and ( email or isAdmin ) :
         try :
             usertype = UserInfo.NORMAL
             if is_group :
@@ -718,7 +718,7 @@ def userCreate(params, isSuper = False) :
         response["code"]    = -1
         response["message"] = "필수 항목을 모두 입력하여 주십시오."
         
-    if isSuper and is_group :
+    if isAdmin and is_group :
         response["is_group"] = is_group
         
     if username :
@@ -744,7 +744,7 @@ def userGet(request, *args, **kwargs):
         "message"   : ""
     }
      
-    if sessionInfo.isSuper() or request.user.username == username :
+    if sessionInfo.isAdmin() or request.user.username == username :
         result = UserInfo.objects.filter(username__exact = username)
         if not result.exists() :
             response["code"] = -1
@@ -790,13 +790,13 @@ def userUpdate(request, *args, **kwargs):
     user        = User.objects.get(username = username)
     userinfo    = UserInfo.objects.get(username = username)
     sessionInfo = UserInfo.getUserInfo(request)
-    if not sessionInfo.isSuper() and sessionInfo.username != username :
+    if not sessionInfo.isAdmin() and sessionInfo.username != username :
         response["code"]    = -4
         response["message"] = "권한이 없습니다."
         return HttpResponse(json.dumps(response))
      
     # 권한 확인 - 관리자
-    if not sessionInfo.isSuper() and ( home is not None or usertype ) :
+    if not sessionInfo.isAdmin() and ( home is not None or usertype ) :
         response["code"]    = -5
         response["message"] = "관리자만이 변경 가능한 항목을 포함하고 있습니다."
         return HttpResponse(json.dumps(response))
@@ -809,7 +809,7 @@ def userUpdate(request, *args, **kwargs):
      
     # 암호 변경 요청 시 사용자 암호 확인
     if password_new :
-        if sessionInfo.isSuper() and not password_old :
+        if sessionInfo.isAdmin() and not password_old :
             pass
         elif authenticate(username = username, password = password_old) :
             pass
@@ -911,7 +911,7 @@ def userDelete(request, *args, **kwargs):
     username    = request.POST.get("username")
     user        = User.objects.get(username = username)
     sessionInfo = UserInfo.getUserInfo(request)
-    if not ( sessionInfo.isSuper() or request.user.username == username ) :
+    if not ( sessionInfo.isAdmin() or request.user.username == username ) :
         response["code"] = -4
         response["message"] = "권한이 없습니다."
         return HttpResponse(json.dumps(response))
@@ -938,7 +938,7 @@ def isChecked(request, param):
     return (True, False)[request.POST.get(param) == None]
 
 def restart(userinfo) :
-    if not userinfo.isSuper() :
+    if not userinfo.isAdmin() :
         error("Only super user can reatart CELLAR.")
         return False
      

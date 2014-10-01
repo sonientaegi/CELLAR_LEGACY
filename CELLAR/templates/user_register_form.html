@@ -1,7 +1,7 @@
 <form class="align_center_flow_vertical" method="post" action="{{action_url}}" data-ajax="false">{% csrf_token %}
 	<input name="signup" value="true" type="hidden" />
 	<table>
-		{% if isSuper %} 
+		{% if isAdmin %} 
 		<tr>
 			<td style="padding-right : 1em;">그룹유저</td>
 			<td>
@@ -32,7 +32,7 @@
 				이메일
 			</td>
 			<td>
-				<input id="email" name="email" type="email" value="{{ email | default:'' }}" {% if not isSuper %} required="required" {% endif %} />
+				<input id="email" name="email" type="email" value="{{ email | default:'' }}" {% if not isAdmin %} required="required" {% endif %} />
 			</td>
 		</tr>
 		<tr>
@@ -57,7 +57,7 @@
 </form>
 
 <script>
-{% if isSuper %}
+{% if isAdmin %}
 $("#is_group").on("click", function() {
 	var is_group = $("#is_group");
 	var username = $("#username");

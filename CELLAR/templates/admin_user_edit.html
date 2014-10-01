@@ -46,7 +46,7 @@
 			<thead>
 			<tr>
 				<th style="width : 100px;text-align: center; vertical-align: middle;">사용자</th>
-				<th style="width : 50px; text-align: center; vertical-align: middle;">관리자</th>
+				<th style="width : 50px; text-align: center; vertical-align: middle;">유형</th>
 				{% for groupInfo in user_group.group %}
 				<th class="context_menu cell-selectable group {{groupInfo.1.username|slice:'1:'}}" style="width: 100px; text-align: center; vertical-align: middle;" 
 					data-priority="{{groupInfo.0}}"
@@ -62,8 +62,17 @@
 				<td class="context_menu cell-selectable" data-username="{{user.username}}" style="text-align: center; vertical-align: middle;">
 					{{ user.username }}<BR>({{ user.first_name }})
 				</td>
-				<td style="text-align: center; vertical-align: middle;">
-					<a href="#" style="display : {% if user.isSuper %}visible{% else %}none{% endif %};" class="ui-icon-check ui-btn ui-shadow ui-corner-all ui-btn-icon-notext super_user {{ user.username }}">X</a>
+				<td style="text-align: center; vertical-align: middle;" class="{{user.username}} usertype">
+					{% if user.usertype == 3 %}
+					읽기
+					{% elif user.usertype == 4 %}
+					자유
+					{% elif user.usertype == 8 %}
+					운영자
+					{% elif user.usertype == 9 %}
+					시스템
+					{% endif %} 
+					<!-- <a href="#" style="display : {% if user.isAdmin %}visible{% else %}none{% endif %};" class="ui-icon-check ui-btn ui-shadow ui-corner-all ui-btn-icon-notext super_user {{ user.username }}">X</a> -->
 				</td>
 				{% for assign in user.assign %}
 				<td style="text-align: center; vertical-align: middle;" class="group {{assign.0|slice:'1:'}}"> 
@@ -97,13 +106,21 @@
 			   		<input name="is_group" type="checkbox" data-mini="true" value="is_group" {% if user_create.is_group %} checked="checked" {% endif %}>설정
 			   		</label>
 			   		-->
-			   		<fieldset id="usertype" data-role="controlgroup" data-type="horizontal">
+			   		<fieldset id="usertype" data-role="controlgroup" data-type="horizontal" data-mini="true">
 						<input type="radio" name="usertype" id="usertype-normal" value="normal" class="radio_usertype">
-						<label for="usertype-normal">일반 사용자</label>  
-						<input type="radio" name="usertype" id="usertype-super" value="super" class="radio_usertype" checked="checked">
-						<label for="usertype-super">운영자</label> 
+						<label for="usertype-normal">일반</label>
+						<input type="radio" name="usertype" id="usertype-metic" value="metic" class="radio_usertype">
+						<label for="usertype-metic">읽기</label>
+						<input type="radio" name="usertype" id="usertype-yeoman" value="yeoman" class="radio_usertype">
+						<label for="usertype-yeoman">자유</label>
+						<input type="radio" name="usertype" id="usertype-admin" value="admin" class="radio_usertype">
+						<label for="usertype-admin">운영자</label> 
 					</fieldset>
-					<fieldset id="usergroup" data-role="controlgroup" data-type="horizontal">
+					<fieldset id="usersuper" data-role="controlgroup" data-type="horizontal" data-mini="true">
+						<input type="radio" name="usersuper" id="usertype-super" value="super" class="radio_usertype">
+						<label for="usertype-super">시스템</label> 
+					</fieldset>
+					<fieldset id="usergroup" data-role="controlgroup" data-type="horizontal" data-mini="true">
 						<input type="radio" name="usergroup" id="usertype-group" value="group" class="radio_usertype">
 						<label for="usertype-group">그룹</label> 
 					</fieldset>
@@ -174,7 +191,7 @@
 
 var Admin = {
 	popupUserEditor : function(userinfo, target) {
-		$("#popupUserEdit#error_message").text("붕가붕가!");
+		$("#popupUserEdit#error_message").text("");
 		
 		// 계정 유형 설정
 		$(".radio_usertype").each(function(index) {
@@ -188,20 +205,32 @@ var Admin = {
 		case 2:
 			$("#usertype-group").prop("checked", true).checkboxradio("refresh");
 			break;
+		case 3:
+			$("#usertype-metic").prop("checked", true).checkboxradio("refresh");
+			break;
+		case 4:
+			$("#usertype-yeoman").prop("checked", true).checkboxradio("refresh");
+			break;
+		case 8:
+			$("#usertype-admin").prop("checked", true).checkboxradio("refresh");
+			break;
 		case 9:
 			$("#usertype-super").prop("checked", true).checkboxradio("refresh");
 			break;
 		}
 		
+		$("#usergroup").hide();
+		$("#usersuper").hide();
+		$("#usertype").hide();
 		switch(userinfo["usertype"]) {
-		case 1:
 		case 9:
-			$("#usertype").show();
-			$("#usergroup").hide();
+			$("#usersuper").show();
 			break;
 		case 2:
-			$("#usertype").hide();
 			$("#usergroup").show();
+			break;
+		default :
+			$("#usertype").show();
 			break;
 		}
 		
@@ -214,7 +243,7 @@ var Admin = {
 		
 		$("#update_user").unbind("click");
 		$("#update_user").on("click", function() {
-			$.mobile.loading("show");
+			Blocker.acquire("사용자 정보 업데이트 중...");
 			var params = {
 				csrfmiddlewaretoken : crsf_token,
 				username	: userinfo["username"],
@@ -235,32 +264,60 @@ var Admin = {
 			else if($("#usertype-group").prop("checked")) {
 				params["usertype"] = 2; 
 			}
+			else if($("#usertype-metic").prop("checked")) {
+				params["usertype"] = 3;
+			}
+			else if($("#usertype-yeoman").prop("checked")) {
+				params["usertype"] = 4;
+			}
+			else if($("#usertype-admin").prop("checked")) {
+				params["usertype"] = 8;
+			}
 			else if($("#usertype-super").prop("checked")) {
 				params["usertype"] = 9; 
 			}
 			
 			$.post("/user/update", params,
 				function(data, status) {
-					$.mobile.loading("hide");	
-					
 					if(status != 'success') {
-						console.log("Browsing failed.");
-						return;
-					}
-					var jsonResponse = JSON.parse(data);
-					if(jsonResponse["code"] != 0) {
-						alert(jsonResponse["message"]);
+						alert("사용자 정보 업데이트 도중 오류가 발생했습니다.");
 					}
 					else {
-						target.html(jsonResponse["username"] + "<BR>(" + jsonResponse["name"] + ")" );
-						var selector = "." + jsonResponse["username"] + ".super_user";
-						if(jsonResponse["usertype"] == 9) {
-							$(selector).show();	
+						var jsonResponse = JSON.parse(data);
+						if(jsonResponse["code"] != 0) {
+							alert(jsonResponse["message"]);
 						}
 						else {
-							$(selector).hide();
+							target.html(jsonResponse["username"] + "<BR>(" + jsonResponse["name"] + ")" );
+							var selector = "." + jsonResponse["username"] + ".usertype";
+							var usertype = "";
+							switch(jsonResponse["usertype"]) {
+							case 3:
+								usertype = "읽기";
+								break;
+							case 4:
+								usertype = "자유";
+								break;
+							case 8:
+								usertype = "운영자";
+								break;
+							case 9:
+								usertype = "시스템";
+								break;
+							}
+							$(selector).text(usertype);
+							/*
+							var selector = "." + jsonResponse["username"] + ".super_user";
+							if(jsonResponse["usertype"] == 9) {
+								$(selector).show();	
+							}
+							else {
+								$(selector).hide();
+							}
+							*/
 						}
 					}
+					Blocker.release();
 				});
 			$("#popupUserEdit").popup("close");
 		});
@@ -292,15 +349,7 @@ var Admin = {
 							"사용자 " + username + " 을(를) 삭제 시겠습니까?",
 							" ",		
 							function() { 
-								$.mobile.loading( "show", {
-							        text: "사용자 계정 삭제 중",
-							        textVisible: true,
-							        theme: "a",
-							        textonly: false,
-							        html: ""
-								});
-								
-								
+								Blocker.acquire("사용자 계정 삭제 중...");
 								$.post("/user/delete", {
 									csrfmiddlewaretoken : crsf_token,
 									username : username
@@ -309,50 +358,51 @@ var Admin = {
 									$.mobile.loading("hide");
 									
 									if(status != 'success') {
-										alert("사용자 삭제 도중 오류가 발생했습니다.");
-										return;
-									}
-									jsonResponse = JSON.parse(data);
-									if(jsonResponse["code"] != 0) {
-										alert(jsonResponse["message"]);
+										alert("사용자 계정 삭제 도중 오류가 발생했습니다.");
 									}
 									else {
-										$(selector).remove();
-										$("#user_group").table("rebuild");
+										jsonResponse = JSON.parse(data);
+										if(jsonResponse["code"] != 0) {
+											alert(jsonResponse["message"]);
+										}
+										else {
+											$(selector).remove();
+											$("#user_group").table("rebuild");
+										}
 									}
+									Blocker.release();
 								});
 							}
 						);
 						break;
 						
 				 	case "edit" :
+				 		Blocker.acquire();
 				 		$.post("/user/get", {
 							csrfmiddlewaretoken : crsf_token,
 							username : username
 							},
-									function(data, status) {
-										$.mobile.loading("hide");
-
-										if (status != 'success') {
-											console.log("Fail to delete user");
-											return;
-										}
-
-										jsonResponse = JSON.parse(data);
-										if (jsonResponse["code"] != 0) {
-											alert(jsonResponse["message"]);
-										} else {
-											Admin.popupUserEditor(jsonResponse,
-													target);
-										}
-									});
-							break;
-						}
-					}
+							function(data, status) {
+								if (status != 'success') {
+									alert("페이지를 불러오는 도중 오류가 발생했습니다.");
+								}
+								else {
+									jsonResponse = JSON.parse(data);
+									if (jsonResponse["code"] != 0) {
+										alert(jsonResponse["message"]);
+									} else {
+										Admin.popupUserEditor(jsonResponse, target);
+									}
+								}
+								Blocker.release();
+							});
+				 		break;
+				 	}
 				}
 			}
 		}
-	};
-	$.contextMenu(Admin.contextMenu);
+	}
+}
+$.contextMenu(Admin.contextMenu);
 </script>
 {% endblock %}

@@ -31,8 +31,10 @@ class UserInfo(models.Model):
     GUEST       = 0
     NORMAL      = 1
     GROUP       = 2
+    METIC       = 3     # Readable for anything
+    YEOMAN      = 4     # Having any authority except administrator    
     ADMIN       = 8
-    SUPER       = 9
+    SUPER       = 9     # Django superuser
      
     """ 사용자 아이디 """
     username    = models.TextField(primary_key = True)
@@ -47,9 +49,18 @@ class UserInfo(models.Model):
     def isGuest(self):
         return self.usertype == UserInfo.GUEST
      
-    def isSuper(self): 
+    def isAdmin(self): 
         return self.usertype == UserInfo.SUPER
-     
+    
+    def isAdmin(self):
+        return self.usertype >= UserInfo.ADMIN
+    
+    def isYeoman(self):
+        return self.usertype >= UserInfo.YEOMAN
+    
+    def isMetic(self):
+        return self.usertype >= UserInfo.METIC
+    
     def getName(self): 
         return User.objects.get(username = self.username ).first_name
      

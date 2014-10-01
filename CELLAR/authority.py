@@ -14,6 +14,7 @@ from CELLAR                 import config, index
 from CELLAR.models          import FileDescriptor, UserGroups, UserAuthority
 from SonienStudio.file      import FileManager
 from SonienStudio.log       import error
+from pip._vendor.requests.packages.chardet.latin1prober import OTH
 
 
 class Directory :
@@ -94,16 +95,16 @@ class Directory :
             return False
     
     @staticmethod
-    def getAuth(userinfo, fullPath):
+    def getAuth(userinfo, fullPath, mode = 0x07):
         """
         조회 대상에 대하여 소유한 권한을 RWD 튜플로 반환한다.
         """
-        if userinfo.isSuper() :    
+        if userinfo.isYeoman() or mode == 0x04 and userinfo.isMetic() : 
             return (True, True, True)
         
-        readable    = False
-        writeable   = False
-        deletable   = False
+        readable    = not (mode & 0x04) | userinfo.isMetic()
+        writeable   = not (mode & 0x02)
+        deletable   = not (mode & 0x01)
         
         normFullPath = os.path.normpath(fullPath)
                 
@@ -175,7 +176,7 @@ class Directory :
         mode     : RWD 를 나타내는 3자리 숫자 배열 (111 ~ 000)
         조회 대상 권한 모두 보유 시 참 반환. 그 외에는 거짓
         """
-        auth = Directory.getAuth(userinfo, fullPath)
+        auth = Directory.getAuth(userinfo, fullPath, mode)
         isValid = True
         if isValid and mode & 0x04 and not auth[0] :
             isValid = False

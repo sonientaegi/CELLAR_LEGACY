@@ -22,7 +22,7 @@ def copyrightPage(request, *args, **kwrags):
 def main(request, *args, **kwargs):
     context = {
         "config"    : config,
-        "isSuper"   : UserInfo.getUserInfo(request).isSuper()
+        "isAdmin"   : UserInfo.getUserInfo(request).isAdmin()
     } 
     return HttpResponse(render(request, "cellar.html", context))
 
@@ -56,11 +56,11 @@ def signup(request, *args, **kwargs):
             login(request, response["user"])
             return redirect("/")
         else :
-            response["isSuper"] = False
+            response["isAdmin"] = False
             return HttpResponse(render(request, "user_register.html", response ))
         
     else :
-        return HttpResponse(render(request, "user_register.html", { "isSuper" : False } ))
+        return HttpResponse(render(request, "user_register.html", { "isAdmin" : False } ))
 
 def authorityManager(request, *args, **kwargs) :
     """

@@ -23,7 +23,7 @@ def general(request, *args, **kwargs):
     isSubmitted = request.POST.get("isSubmitted");
     pageYOffset = "0";
       
-    if userinfo.isSuper() and isSubmitted :
+    if userinfo.isAdmin() and isSubmitted :
         config.TITLE            = request.POST.get("title")
         config.ROOT             = request.POST.get("root")
         config.HOME_USER        = request.POST.get("home_user")
@@ -46,7 +46,7 @@ def general(request, *args, **kwargs):
     context = { 
            "config"         : vars(config), 
            "pageYOffset"    : pageYOffset,
-           "isSuper"        : UserInfo.getUserInfo(request).isSuper()
+           "isAdmin"        : UserInfo.getUserInfo(request).isAdmin()
         } 
     return HttpResponse(render(request, "admin_general.html", context ))
 
@@ -56,16 +56,16 @@ def userNew(request, *args, **kwargs):
     userinfo = UserInfo.getUserInfo(request)
     
     if request.POST.get("signup") :
-        response = userCreate(request.POST, userinfo.isSuper())
+        response = userCreate(request.POST, userinfo.isAdmin())
        
         if response["code"] == 0 :
             context["code"]     = 0
             context["message"]  = "사용자 {0} 이(가) 등록되었습니다.".format(response["username"])
         else :
-            response["isSuper"] = userinfo.isSuper()
+            response["isAdmin"] = userinfo.isAdmin()
             return HttpResponse(render(request, "admin_user_new.html", response ))
         
-    context["isSuper"]  = userinfo.isSuper()
+    context["isAdmin"]  = userinfo.isAdmin()
     return HttpResponse(render(request, "admin_user_new.html", context))
 
 def userEdit(request, *args, **kwargs):
@@ -91,10 +91,9 @@ def userEdit(request, *args, **kwargs):
             users = UserInfo.objects.filter(username=username)
     else :
         search_term = request.POST.get("user.group.search.term")
-        if search_term and request.POST.get('user.group.search') :
-            users = UserInfo.objects.filter(username__contains=search_term, usertype__in=[UserInfo.NORMAL, UserInfo.SUPER])
-        else :
-            users = UserInfo.objects.filter(usertype__in=[UserInfo.NORMAL, UserInfo.SUPER])
+        if not search_term or not request.POST.get('user.group.search') :
+            search_term = ""
+        users = UserInfo.objects.filter(username__contains=search_term).exclude(usertype=UserInfo.GROUP)
             
     general = 0
     groupIndex = {}
@@ -112,7 +111,8 @@ def userEdit(request, *args, **kwargs):
         user = {'username'      : userinfo.username, 
                 'first_name'    : auth_user.first_name, 
                 'last_name'     : auth_user.last_name,
-                'isSuper'       : userinfo.isSuper(), 
+                'usertype'      : userinfo.usertype,
+                'isAdmin'       : userinfo.isAdmin(), 
                 'assign'        : [] }
         for group in groups :
             user['assign'].append([group.username, False])
@@ -126,13 +126,13 @@ def userEdit(request, *args, **kwargs):
     context = {
         'user_group'    : user_group,
         'config'        : vars(config),
-        'isSuper'       : UserInfo.getUserInfo(request).isSuper()
+        'isAdmin'       : UserInfo.getUserInfo(request).isAdmin()
     }
     return render(request, "admin_user_edit.html", context)     
     
 def etc(request, *args, **kwargs):
     context = {
         'config'        : vars(config),
-        'isSuper'       : UserInfo.getUserInfo(request).isSuper()
+        'isAdmin'       : UserInfo.getUserInfo(request).isAdmin()
     }
     return HttpResponse(render(request, "admin_etc.html", context))

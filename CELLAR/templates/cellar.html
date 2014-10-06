@@ -120,7 +120,8 @@ var CELLAR = {
 		var data = WidgetHelper.getData(node);
 		var target = [0, data[0][1], data[0][0]];
 		console.log("index dragStart " + "D" + " | " + target[1]);
-		event.originalEvent.dataTransfer.setData("target", JSON.stringify(target));
+		event.originalEvent.dataTransfer.setData("text", JSON.stringify(target));
+		// event.originalEvent.dataTransfer.setData("target_item", JSON.stringify(target));
 	},
 	
 	dragStart_filelist : function(event, row) {
@@ -133,7 +134,7 @@ var CELLAR = {
 		}
 		var target = [data[0], data[1][1], exts];
 		console.log("index dragStart " + target[0] + " | " + target[1]);
-		event.originalEvent.dataTransfer.setData("target", JSON.stringify(target));
+		event.originalEvent.dataTransfer.setData("text", JSON.stringify(target));
 	},
 	
 	/*
@@ -142,7 +143,7 @@ var CELLAR = {
 	drop_on_directree : function(event, node) {
 		event.preventDefault();
 		var dstPath		= WidgetHelper.getData(node)[0][1];
-		var targetData 	= event.originalEvent.dataTransfer.getData("target"); 
+		var targetData 	= event.originalEvent.dataTransfer.getData("text"); 
 		if(targetData == null || targetData == "") {
 			return false;
 		}

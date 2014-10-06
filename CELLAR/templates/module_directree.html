@@ -198,12 +198,20 @@
 			{% if user.is_superuser %}
 			// Drag and drop 구현			
 			if(data[1] != "/") {
-				header.attr("draggable", true);
+				// header.attr("draggable", true);
+				header.prop("draggable", true);
+				
 				header.on("dragstart", function(event) {
 					if(Directree._onDragStart != null) {
 						Directree._onDragStart(event, node);
 					}
 				});
+				
+				/*
+				 * Will be implemented in the future.
+				header.on("dragend", function(event) {
+				});
+				*/
 			}
 			
 			header.on("dragover", function(event) {
@@ -213,6 +221,7 @@
 			});
 			
 			header.on("drop", function(event) {
+				console.log("drop");
 				if(Directree._onDrop != null) {
 					Directree._onDrop(event, node);
 				}

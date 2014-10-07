@@ -94,16 +94,16 @@
 	<!-- 확인 팝업 완료 -->
 	
 	<!-- 디렉토리 편집 팝업 시작 -->
-	<div data-role="popup" id="popupFormText" style="max-width:500px;">
+	<div data-role="popup" id="popupFormText" style="max-width:80%; min-width:20em;">
 		<form id="popupFormText_form">
 		    <div data-role="header" data-theme="a" role="banner" class="ui-header ui-bar-a">
 		    	<h1 id="popupFormText_header" class="ui-title" role="heading">popupFormText_header</h1>
 		    </div>
 		    <div role="main" class="ui-content">
 		        <h3 id="popupFormText_title" class="ui-title">popupFormText_title</h3>
-		    	<input id="popupFormText_name" name="popupFormText_name" type="text"  placeholder="popupFormText_name" data-theme="a">
+		    	<input id="popupFormText_name" name="popupFormText_name" type="text"  placeholder="popupFormText_name" data-theme="a" style="width: 100%">
 				<div align="center">
-					<button type="submit" class="ui-btn ui-corner-all ui-shadow ui-btn-icon-left ui-icon-check ui-btn-inline">Submit</button>
+					<button type="submit" class="ui-btn ui-corner-all ui-shadow ui-btn-icon-left ui-icon-check ui-btn-inline ui-mini">Submit</button>
 				</div>
 		    </div>
 		</form>
@@ -127,6 +127,7 @@
 			popupFormText._name.val(mode == 0 ? "" : originName);
 			popupFormText._name.attr("placeholder", placeholder[mode]);
 			popupFormText._onSubmit = cbSubmit;
+			popupFormText._instance.css("min-width", "20em");
 			popupFormText._instance.popup("open");
 		}
 	};

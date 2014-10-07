@@ -352,7 +352,6 @@
 		    selector : '.context_menu_filelist_dir', 
 		    build : function($trigger, e) {
 		    	var items = {
-						"download"		: {name: "다운로드(예정)"},
 						{% if user.isAdmin %}
 		    			"Seperator"		: "----",
 		    			"auth_read"		: {name: "읽기 권한"},
@@ -371,70 +370,70 @@
 		    	
 				return {
 					items : items,
-					callback : function(key, options) {
-						var data = WidgetHelper.getData(this);
-						console.log("ContextMenu " + key + " on " + data[1][1]); 
-						switch(key) {
-						{% if user.isAdmin %}
-						case "auth_read" 	:
-						case "auth_write"	:
-						case "auth_delete"	:
-							var auth_type = 0;
-							if(key == "auth_read") {
-								auth_type = 4
-							}
-							if(key == "auth_write") {
-								auth_type = 2;
-							}
-							else if(key == "auth_delete") {
-								auth_type = 1;
-							}
-							
-							$( ":mobile-pagecontainer" ).pagecontainer("change", "/auth/manager", { 
-								type		: "post",
-								data		: { path 				: data[1][1], 
-												auth_type 			: auth_type,
-												csrfmiddlewaretoken : '{{csrf_token}}' },
-								role		: "dialog",
-								transition	: "flip",
-								closeBtn	: "right"
-							});
-							break;
-						{% endif %}
-						case "delete" :
-							popupYesNo.modal(
-								"확인",
-								"정말 지우시겠습니까?",
-								data[1][0],		
-								function() { 
-									Transaction.deleteDir(data[1][1]); 
-								}
-							);
-							break;
-						case "rename" :
-							popupFormText.modal(
-								function(newDirName) {
-									if(newDirName == "" || newDirName == data[1][0]) {
-										return;
-									}
-									
-									Transaction.changeDirName(data[1][1], newDirName);
-								}, 
-								true, 
-								data[1][0]);
-							break;
-						}
-					}
+					callback : Filelist._callbackContextMenu_dir
 				}
 		    }
+		},
+		
+		_callbackContextMenu_dir : function(key, options) {
+			var data = WidgetHelper.getData(this);
+			console.log("ContextMenu " + key + " on " + data[1][1]); 
+			switch(key) {
+			{% if user.isAdmin %}
+			case "auth_read" 	:
+			case "auth_write"	:
+			case "auth_delete"	:
+				var auth_type = 0;
+				if(key == "auth_read") {
+					auth_type = 4
+				}
+				if(key == "auth_write") {
+					auth_type = 2;
+				}
+				else if(key == "auth_delete") {
+					auth_type = 1;
+				}
+				
+				$( ":mobile-pagecontainer" ).pagecontainer("change", "/auth/manager", { 
+					type		: "post",
+					data		: { path 				: data[1][1], 
+									auth_type 			: auth_type,
+									csrfmiddlewaretoken : '{{csrf_token}}' },
+					role		: "dialog",
+					transition	: "flip",
+					closeBtn	: "right"
+				});
+				break;
+			{% endif %}
+			case "delete" :
+				popupYesNo.modal(
+					"확인",
+					"정말 지우시겠습니까?",
+					data[1][0],		
+					function() { 
+						Transaction.deleteDir(data[1][1]); 
+					}
+				);
+				break;
+			case "rename" :
+				popupFormText.modal(
+					function(newDirName) {
+						if(newDirName == "" || newDirName == data[1][0]) {
+							return;
+						}
+						
+						Transaction.changeDirName(data[1][1], newDirName);
+					}, 
+					true, 
+					data[1][0]);
+				break;
+			}
 		},
 		
 		ContextMenu_file : {
 		    selector : '.context_menu_filelist_file', 
 		    build : function($trigger, e) {
-		    	var items = {
-						"download"		: {name: "다운로드(예정)"},
-					};
+		    	var items = {};
 		    	
 		    	if(Filelist.writeable) {
 		    		items["rename"] = {name: "이름 변경"};
@@ -446,44 +445,46 @@
 		    	
 				return {
 					items : items,
-					callback : function(key, options) {
-						var data = WidgetHelper.getData(this);
-						console.log("ContextMenu " + key + " on " + data[1][1]); 
-						switch(key) {
-						case "delete" :
-							popupYesNo.modal(
-								"확인",
-								"정말 지우시겠습니까?",
-								data[1][0],		
-								function() { 
-									var exts = [];
-									data[1][2].forEach(function(value) {
-										exts.push(value[0]);
-									});
-									Transaction.deleteFiles(data[1][1], exts); 
-								}
-							);
-							break;
-						case "rename" :
-							popupFormText.modal(
-								function(newFileName) {
-									if(newFileName == "" || newFileName == data[1][0]) {
-										return;
-									}
-										
-									var exts = [];
-									for(var i = 0; i < data[1][2].length; i++) {
-										exts.push(data[1][2][i][0]);
-									}
-									Transaction.changeFileGroupName(data[1][1], exts, newFileName);
-								}, 
-								true, 
-								data[1][0]);
-							break;
-						}
-					}
+					callback : Filelist._callbackContextMenu_file
 				}
 		    }
+		},
+		
+		_callbackContextMenu_file : function(key, options) {
+			var data = WidgetHelper.getData(this);
+			console.log("ContextMenu " + key + " on " + data[1][1]); 
+			switch(key) {
+			case "delete" :
+				popupYesNo.modal(
+					"확인",
+					"정말 지우시겠습니까?",
+					data[1][0],		
+					function() { 
+						var exts = [];
+						data[1][2].forEach(function(value) {
+							exts.push(value[0]);
+						});
+						Transaction.deleteFiles(data[1][1], exts); 
+					}
+				);
+				break;
+			case "rename" :
+				popupFormText.modal(
+					function(newFileName) {
+						if(newFileName == "" || newFileName == data[1][0]) {
+							return;
+						}
+							
+						var exts = [];
+						for(var i = 0; i < data[1][2].length; i++) {
+							exts.push(data[1][2][i][0]);
+						}
+						Transaction.changeFileGroupName(data[1][1], exts, newFileName);
+					}, 
+					true, 
+					data[1][0]);
+				break;
+			}
 		}
 	};
 

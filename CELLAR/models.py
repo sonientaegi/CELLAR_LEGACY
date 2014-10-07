@@ -49,7 +49,7 @@ class UserInfo(models.Model):
     def isGuest(self):
         return self.usertype == UserInfo.GUEST
      
-    def isAdmin(self): 
+    def isSuper(self): 
         return self.usertype == UserInfo.SUPER
     
     def isAdmin(self):

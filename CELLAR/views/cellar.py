@@ -19,22 +19,32 @@ from SonienStudio.log           import error
 def copyrightPage(request, *args, **kwrags):
     return HttpResponse(render(request, "copyright.html"))
 
+def _getContext(request) :
+    userInfo = UserInfo.getUserInfo(request) 
+    return {
+        "config"    : config,
+        "isAdmin"   : userInfo.isAdmin(),
+        "isSuper"   : userInfo.isSuper(),
+        "is_ajax"   : request.is_ajax()
+    } 
+    
 def main(request, *args, **kwargs):
     context = {
-        "config"    : config,
-        "isAdmin"   : UserInfo.getUserInfo(request).isAdmin()
+        
     } 
-    return HttpResponse(render(request, "cellar.html", context))
+    return HttpResponse(render(request, "cellar.html", _getContext(request)))
 
 def directree(request, *args, **kwargs):
-    return HttpResponse(render(request, "module_directree.html", { "is_ajax" : request.is_ajax() }))
+    return HttpResponse(render(request, "module_directree.html", _getContext(request) ))
  
 def filelist(request, *args, **kwargs):
-    return HttpResponse(render(request, "module_filelist.html", { "is_ajax" : request.is_ajax() }))
+    return HttpResponse(render(request, "module_filelist.html", _getContext(request) ))
 
 def upload(request, *args, **kwargs):
     cwd = request.POST.get("cwd")
-    return HttpResponse(render(request, "module_upload.html", {"cwd" : cwd }))
+    context = _getContext(request)
+    context["cwd"] = cwd
+    return HttpResponse(render(request, "module_upload.html", context ))
 
 def myinfo(request, *args, **kwargs):
     userinfo    = UserInfo.getUserInfo(request)
@@ -60,7 +70,7 @@ def signup(request, *args, **kwargs):
             return HttpResponse(render(request, "user_register.html", response ))
         
     else :
-        return HttpResponse(render(request, "user_register.html", { "isAdmin" : False } ))
+        return HttpResponse(render(request, "user_register.html", _getContext(request) ))
 
 def authorityManager(request, *args, **kwargs) :
     """

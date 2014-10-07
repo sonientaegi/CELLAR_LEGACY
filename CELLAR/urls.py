@@ -1,5 +1,6 @@
 from django.conf.urls           import patterns, include, url
 from django.contrib             import admin
+import django.shortcuts
 
 from CELLAR                     import settings, views
 
@@ -7,6 +8,9 @@ from CELLAR                     import settings, views
 admin.autodiscover()
 
 urlpatterns = patterns('',  
+    # External libraries
+    url(r'^libs/(?P<path>.*)$'          , 'django.views.static.serve', {'document_root' : settings.BASE_DIR + '/CELLAR/libs'}),
+                           
     url(r'^admin/'                      , include(admin.site.urls)),
     
     url(r'^$'                           , views.cellar.main, name="cellar"),
@@ -52,7 +56,8 @@ urlpatterns = patterns('',
     url(r'^tarload/(?P<filename>.*)$'   , views.util.tarload),
     url(r'^tarload$'                    , views.util.tarload),
     url(r'^download/(?P<filepath>.*)$'  , views.util.download), 
-    url(r'^libs/(?P<path>.*)$'          , 'django.views.static.serve', {'document_root' : settings.BASE_DIR + '/CELLAR/libs'}),
-    url(r'^static/(?P<path>.*)$'        , 'django.views.static.serve', {'document_root' : settings.BASE_DIR + '/CELLAR/static'}),
-    url(r'^templates/(?P<path>.*)$'     , 'django.views.static.serve', {'document_root' : settings.BASE_DIR + '/CELLAR/templates'}),    
+    
+    url(r'^(?P<path>.+\.js)$'           , views.simple_response, {'type' : 'scripts'}),
+    url(r'^(?P<path>.+\.css)$'          , 'django.views.static.serve', {'document_root' : settings.BASE_DIR + '/CELLAR/templates'}),
+    url(r'^static/(?P<path>.*)$'        , 'django.views.static.serve', {'document_root' : settings.BASE_DIR + '/CELLAR/static'}),    
 )

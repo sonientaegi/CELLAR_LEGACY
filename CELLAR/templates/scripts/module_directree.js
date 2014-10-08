@@ -48,14 +48,16 @@ var Directree = {
 	
 	ContextMenu : {
 	    selector : '.context_menu_directree', 
-	    build : function($trigger, e) {
+	    build : function($trigger, e) {	    	
 	    	var contextMenuItems = {};
-	    	// {% if isSuper %} 
+	    	// {% if isYeoman %}
 	    	contextMenuItems["create"]	= {name: "새 폴더"};
 	    	if(!$(e.currentTarget).hasClass("home_directory")) {
 	    		contextMenuItems["rename"]	= {name: "이름 변경"};
 	    		contextMenuItems["delete"]	= {name: "삭제"};
 	    	}
+	    	// {% endif %}
+	    	// {% if isAdmin %} 
 	    	contextMenuItems["Seperator"] 	= "----";
 	    	contextMenuItems["auth_read"] 	= {name: "읽기 권한"};
 	    	contextMenuItems["auth_write"] 	= {name: "쓰기 권한"};
@@ -70,9 +72,9 @@ var Directree = {
 	},
 	
 	_callbackContextMenu : function(key, options) {
-		var data = WidgetHelper.getData(this); 
+		var data = WidgetHelper.getData(this);
 		switch(key) {
-		// {% if user.is_superuser %} 	
+		// {% if isAdmin %} 	
 		case "auth_read" 	:
 		case "auth_write"	:
 		case "auth_delete"	:
@@ -96,6 +98,8 @@ var Directree = {
 				closeBtn	: "right"
 			});
 			break;
+		// {% endif %}
+		// {% if isYeoman %}
 		case "delete" :
 			popupYesNo.modal(
 				"확인",
@@ -112,7 +116,6 @@ var Directree = {
 					if(newDirName == "" || newDirName == data[0][0]) {
 						return;
 					}
-					
 					Transaction.changeDirName(data[0][1], newDirName);
 				}, 
 				true, 
@@ -149,6 +152,7 @@ var Directree = {
 	_callbackCreate : function(node, data) {
 		node.css("margin-top", "-1px");
 		var header = node.find("h1").first();
+		WidgetHelper.setData(header, WidgetHelper.getData(node));
 		var childrenContainer = node.nodeHelper("childrenContainer");
 		header.addClass("context_menu_directree");
 	 	if(data[1] == "/") {
@@ -170,7 +174,7 @@ var Directree = {
 		childrenContainer.parent().css("border-bottom", "0px");
 		childrenContainer.parent().css("background-color", "transparent");
 
-		// {% if user.is_superuser %}
+		// {% if isYeoman %}
 		// Drag and drop 구현			
 		if(data[1] != "/") {
 			// header.attr("draggable", true);

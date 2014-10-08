@@ -72,7 +72,6 @@
 					{% elif user.usertype == 9 %}
 					시스템
 					{% endif %} 
-					<!-- <a href="#" style="display : {% if user.isAdmin %}visible{% else %}none{% endif %};" class="ui-icon-check ui-btn ui-shadow ui-corner-all ui-btn-icon-notext super_user {{ user.username }}">X</a> -->
 				</td>
 				{% for assign in user.assign %}
 				<td style="text-align: center; vertical-align: middle;" class="group {{assign.0|slice:'1:'}}"> 

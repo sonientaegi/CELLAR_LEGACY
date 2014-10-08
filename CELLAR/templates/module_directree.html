@@ -20,7 +20,7 @@ Directree.instance.treeHelper("callback", "remove", Directree._callbackRemove);
 Directree.instance.treeHelper("callback", "detach", Directree._callbackDetach);
 Directree.root = Directree.instance.treeHelper("addRoot", ["HOME", "/", []]);
 
-/*
+// {% if not is_ajax %}
 $.post("/browse/directory", {
 	target				: '/',
 	csrfmiddlewaretoken : '{{csrf_token}}'
@@ -34,7 +34,7 @@ $.post("/browse/directory", {
 		Directree._refresh(Directree.root);
 	}
 );
-*/
+// {% endif %}
 
 // 컨텍스트 메뉴 등록
 $.contextMenu(Directree.ContextMenu);

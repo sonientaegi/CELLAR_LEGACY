@@ -235,8 +235,9 @@ var Filelist = {
 	_callbackChangeDirName : function(code, srcPath, dst, dstPath){
 		// ROW 찾기
 		var row = Filelist.instance.tableHelper("find", srcPath);
-		var data = WidgetHelper.getData(row);
+		if(row == null) return;
 		
+		var data = WidgetHelper.getData(row);
 		if(code == 0) {
 			row.find("#dirname").first().text(dst);
 			data[1][0] = dst;
@@ -335,7 +336,7 @@ var Filelist = {
 	    selector : '.context_menu_filelist_dir', 
 	    build : function($trigger, e) {
 	    	var items = {
-					// {% if user.isAdmin %}
+					// {% if isAdmin %}
 	    			"Seperator"		: "----",
 	    			"auth_read"		: {name: "읽기 권한"},
 	    			"auth_write"	: {name: "쓰기 권한"},
@@ -362,7 +363,7 @@ var Filelist = {
 		var data = WidgetHelper.getData(this);
 		console.log("ContextMenu " + key + " on " + data[1][1]); 
 		switch(key) {
-		// {% if user.isAdmin %}
+		// {% if isAdmin %}
 		case "auth_read" 	:
 		case "auth_write"	:
 		case "auth_delete"	:

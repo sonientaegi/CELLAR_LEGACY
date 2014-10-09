@@ -1,0 +1,107 @@
+{% extends "template.html" %} 
+
+{% block body %}
+<div data-role="page">
+	<div data-role="header" style="text-align: center;">
+		<a data-role="button" data-icon="back" data-rel="back" class="ui-btn ui-corner-all">돌아가기</a>
+		<h1>{{ config.TITLE }}</h1>  
+	</div><!-- /header -->
+	
+	<div role="main" class="ui-content articles">
+		<div class="ui-body ui-body-a ui-corner-all license">
+			<h3>CELLAR</h3>
+			<div class="banner">
+				<a href="HTTP://CELLAR.SONIEN.NET" target="_blank"><img src="/static/img/CELLAR_BANNER.png"></a>
+			</div>
+			<p>
+				CELLAR <span style="font-size: 50%">TINY WEB STORAGE</span> 는 무료이며 <a href="https://github.com/SonienTaegi/CELLAR/blob/master/LICENSE">GPL v2</a> 를 준수하여 배포됩니다. 
+				따라서 누구나 - 법에서 제한하는 행위를 제외하고는 - 자유로이 사용, 수정 및 재배포를 할 수 있습니다. 
+				프로그램 사용에 관한 문의 및 건의 사항은 아래의 주소로 부탁드리겠습니다.
+				<table style="border: none; margin : 0.5em;">
+					<tr><td style="padding-right : 1em;"> E-MAIL</td><td>SonienTaegi@gmail.com</td></tr>
+					<tr><td style="padding-right : 1em;">WEB SITE</td><td><a href="HTTP://CELLAR.SONIEN.NET" target="_blank">HTTP://CELLAR.SONIEN.NET</a></td></tr>
+					<tr><td style="padding-right : 1em;">GitHub</td><td><a href="HTTPS://github.com/SonienTaegi/CELLAR/" target="_blank">HTTPS://github.com/SonienTaegi/CELLAR</a></td></tr>
+				</table>
+			</p>
+			<p>
+				CELLAR 를 운용 및 사용함에 있어 발생하는 모든 문제에 대해 개발자는 책임을 지지 않습니다.
+			</p>
+			<p style="text-align: center;">
+				<br>*<br><br>
+			</p>
+			<p style="text-align: center;">
+				<font style="font-size : 80%">퇴근 후에도 항상 코딩한다고 놀아주지도 않는남편을<br>응원해주는 살고미님께 감사를 바칩니다.</font>
+			</p>
+		</div>
+
+		<div class="ui-body ui-body-a ui-corner-all license">
+			<h3>PLUPLOAD</h3>
+			<div class="banner">
+				<a href="http://www.plupload.com/" target="_blank">
+				<div style="background-color: #E7E7E7;">
+					<img src="/static/img/plupload.png" style="height: 45px;">
+				</div>
+				</a>
+			</div>
+			<p>
+				PLUPLOAD 는 Moxiecode Systems AB 에서 개발한 파일 업로드 모듈로, GPL v2 및 자체 Commercial 라이선스에 따라 제공되고 있습니다.
+				CELLAR 는 GPL v2 를 준수하여 PLUPLOAD 를 사용하고 있습니다.
+				자세한 사항은 <a href="http://www.plupload.com/" target="_blank">홈페이지</a>를 참조하십시오. 
+			</p>
+		</div>
+			  		
+		<div class="ui-body ui-body-a ui-corner-all license">
+			<h3>jQuery 와 jQuery mobile</h3>
+			<div class="banner">
+				<a href="https://jquery.org" target="_blank"><img src="/static/img/jquery.png"></a>
+			</div>
+			<p>
+				jQuery 와 jQuery mobile 은 jQuery foundation 에서 
+				MIT 라이선스 또는 CC0 에 따라 제공되고 있습니다. 자세한 사항은 jQuery foundation 의 
+				<a href="https://jquery.org/license/" target="_blank">라이선스 정보</a>를 참조하십시오.
+			</p>
+		</div>
+		
+		<div class="ui-body ui-body-a ui-corner-all license">
+			<h3>django</h3>
+			<div class="banner">
+				<a href="https://www.djangoproject.com" target="_blank">
+				<div style="background-color: #092e20;">
+					<img src="https://www.djangoproject.com/s/img/site/hdr_logo.b19c5e60269d.gif">
+				</div>
+				</a>
+			</div>
+			<p>
+				django 는 Django Software Foundation 의 Open Source Web Framework 이며 BSD License 에 따라 제공되고 있습니다.
+				자세한 사항은 <a href="https://www.djangoproject.com/" target="_blank">홈페이지</a>를 참조하십시오.
+			</p>
+		</div>
+		
+		<div class="ui-body ui-body-a ui-corner-all license">
+			<h3>python</h3>
+			<div class="banner">
+				<a href="https://jquery.org" target="_blank">
+				<div style="background-color: #1c3149;">
+					<img src="https://www.python.org/static/img/python-logo.png" style="height: 50px;">
+				</div>
+				</a>
+			</div>
+			<p>
+				python 은 GPL 과 호완되는 PSF 라이선스에 따라 제공되고 있습니다. 이는 수정시 소스코드 공개 의무가 없음을 뜻합니다.
+				자세한 사항은 <a href="https://docs.python.org/3/license.html" target="_blank">라이선스 정보</a>를 참조하십시오.
+			</p>
+		</div>
+		
+		<div class="ui-body ui-body-a ui-corner-all license">
+			<h3>라이선스에 관하여</h3>
+			<p>
+				상기 라이선스에 대해 잘못 기재된 부분을 지적하여 주시면 반영하도록 하겠습니다. 감사합니다.
+			</p>
+		</div>
+	</div>
+	
+	<div data-role="footer">
+	{% include "mod/footer.html" %}
+	</div>
+</div><!-- /page -->
+{% endblock %}

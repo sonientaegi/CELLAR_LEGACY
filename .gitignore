@@ -1,0 +1,4 @@
+*.pyc
+CELLAR.sqlite3
+/.DS_Store
+/.gitignore

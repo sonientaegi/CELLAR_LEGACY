@@ -1,0 +1,53 @@
+{% extends "template.html" %}
+
+{% block body %}
+<script type="text/javascript" src="module_filelist.js"></script>
+
+<table data-role="table" id="table-filelist" data-mode="" class="ui-responsive table-stroke">
+	<thead class="cell-horizontal-center">
+		<tr>
+			<th style="width : 40px;">유형</th>
+			<th style="min-width : 150px;">제목</th>
+			<th style="width : 60px;">크기</th>
+			<th style="width : 300px; min-width : 100px;">다운</th>
+		</tr>
+	</thead>
+	<tbody class="row-selectable cell-vertical-middle">
+	</tbody>
+</table>
+
+<script type="text/javascript">
+
+// 컨텍스트 메뉴 등록
+$.contextMenu(Filelist.ContextMenu_dir);
+$.contextMenu(Filelist.ContextMenu_file);
+
+// 디렉토리 생성 콜백 등록
+Transaction.addCallbackCreateDir(Filelist._callbackCreateDir);
+
+// 디렉토리 삭제 콜백 등록
+Transaction.addCallbackDeleteDir(Filelist._callbackDeleteDir);
+
+// 파일 삭제 콜백 등록
+Transaction.addCallbackDeleteFiles(Filelist._callbackDeleteFiles);
+
+// 디렉토리 이름변경 콜백 등록
+Transaction.addCallbackChangeDirName(Filelist._callbackChangeDirName);
+
+// 파일그룹 이름변경 콜백 등록
+Transaction.addCallbackChangeFileGroupName(Filelist._callbackChangeFileGroupName);
+
+// 디렉토리 이동 클백 등록
+Transaction.addCallbackMoveDir(Filelist._callbackMoveDir);
+
+// 파일그룹 이동 콜백 등록
+Transaction.addCallbackMoveFile(Filelist._callbackMoveFile);
+
+Filelist.instance.tableHelper("create", Filelist.render);
+Filelist.instance.tableHelper("evaluator", Filelist.evaluator);
+Filelist.instance.tableHelper("callback", "create", Filelist._callbackCreateRow);
+Filelist.instance.tableHelper("auto-sort", true);
+
+// Filelist.browse("/");
+</script>
+{% endblock %}

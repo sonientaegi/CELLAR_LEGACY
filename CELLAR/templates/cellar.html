@@ -1,0 +1,165 @@
+{% extends "template.html" %} 
+
+{% block body %}
+<div data-role="page" id="page_CELLAR"><!-- class="ui-responsive-panel" -->
+	<div data-role="header" style="text-align: center;">
+		<a data-role="button" data-icon="grid" onclick="javascript:CELLAR.toggleDirectory()" id="index_toggle_directory"
+			class="ui-nodisc-icon ui-alt-icon ui-btn ui-icon-grid ui-btn-icon-notext ui-corner-all">폴더</a>
+		<h1>{{ config.TITLE }}</h1> 
+		<a data-role="button" data-icon="bars" onclick="javascript:CELLAR.toggleMenu()" data-iconpos="right">메뉴</a> 
+	</div><!-- /header -->
+
+	<div id="panel_left" data-position="left" data-role="panel" data-display="push" data-theme="b">
+		<div class="ui-header" style="border-width: 0px; padding: 0.5em;" >&nbsp;</div>
+		<div data-role="listview" id="content_directory" style="margin-top: -1px;" data-inset="true" data-shadow="false"></div>
+	</div>
+
+	<div id="panel_right" data-position="right" data-role="panel" data-display="overlay" data-theme="a">
+		<ul id="ths_menu" data-role="listview" data-inset="true" data-corners="false" data-shadow="false">
+			<li style="border-width: 0px;">
+			<div id="user_info" style="margin : 50px auto 20px auto; text-align: center;">
+				{% if user.is_authenticated %} 
+				<p>안녕하세요 {{user.username}} 님</p> 
+				<div>
+					<a href="/user/logout" 
+						data-ajax="false" data-role="button" data-mini="true" data-inline="true" style="width : 5em;">로그아웃</a>
+					<a href="/myinfo" 
+						data-ajax="false" data-role="button" data-mini="true" data-inline="true" style="width : 5em;">내 정보</a>
+				</div>
+				{% else %}
+				<div>
+					<a href="/user/login" 	
+						data-ajax="false" data-role="button" data-mini="true" data-inline="true" style="width : 5em;">로그인</a>
+					<a href="/signup" 
+						data-ajax="false" data-role="button" data-mini="true" data-inline="true" style="width : 5em;">회원가입</a>
+				</div>					  
+				{% endif %}
+			</div>
+			</li>
+			{% if isAdmin %}
+			<li data-icon="gear"><a href="/administrator" id="panel_right_setting" data-ajax="false">자료실 설정</a></li>
+			{% endif %}
+		    <li data-icon="edit"><a onclick="javascript:CELLAR.popupNewDirectory()" id="panel_right_newdir">새 폴더</a></li>
+			<li data-icon="arrow-u"><a onclick="javascript:CELLAR.popupUploader()" id="panel_right_upload">업로드</a></li>
+			<li data-icon="arrow-d"><a onclick="javascript:CELLAR.dump_cwd()">한꺼번에 다운</a></li>
+		</ul>
+		
+		<div id="copyright" style="position: absolute; bottom: 10px; left: 10px; right: 10px;" class="align_center_flow_vertical">
+			<a href="/copyright" data-ajax="false" data-role="button" data-mini="true">저작권 정보</a>
+  		</div>
+	</div>
+	
+	{% if not user.is_authenticated and config.LOGIN_CAMPAIGN %}
+		{% include 'mod/login_campaign.html' %}
+	{% endif %}
+
+	<div id="content_cwd" class="ui-content">
+		<div id="field_cwd" class="ths-content-cwd">
+		/
+		</div>
+	</div>
+	
+	<div id="content_filelist" class="ui-content"></div>
+
+	<div data-role="footer">
+	{% include "mod/footer.html" %}
+	</div><!-- /footer -->
+</div><!-- /page -->
+
+<script type="text/javascript" src="/cellar.js"></script>
+<script type="text/javascript">
+
+//Bind to the navigate event
+$( window ).on( "navigate", function( event, data ) {
+	if(data.state.needRefresh) {
+		Filelist.browse(CELLAR.cwd);
+	}
+	window.history.pushState({needRefresh : false} , "", "/");
+	
+	if($(window).width() >= 800) {
+		$("#panel_left").panel("open");
+	}
+});
+
+$("#content_filelist").load(
+	"/module/filelist", 
+	function(response, status, xhr) {
+		if(status == "success") {
+			Filelist.setOnClickDirectoryListener(CELLAR.browse);
+			Filelist.setOnDragStartListener(CELLAR.dragStart_filelist);	
+			
+			CELLAR.isFilelistLoaded = true;
+			CELLAR.initial_browse();
+		}
+		else {
+			alert("서버 오류 : " + xhr.status + " " + xhr.statusText  );
+		}
+	});
+
+$("#content_directory").load(
+	"/module/directree", 
+	function(response, status, xhr) {
+		if(status == "success") {
+			Directree.setOnClickDirectoryListener(CELLAR.browse);
+			Directree.setOnDragStartListener(CELLAR.dragStart_directree);
+			Directree.setOnDropListener(CELLAR.dropOn_directree);
+			
+			CELLAR.isDirectreeLoaded = true;
+			CELLAR.initial_browse();
+		}
+		else {
+			alert("서버 오류 : " + xhr.status + " " + xhr.statusText  );
+		}
+	});
+
+
+$("#panel_right").on("panelbeforeopen", CELLAR.onPanelUpdate);
+$("#panel_right").on("panelclose", function(event, ui) {
+	var windowWidth = $(window).width();	
+	if(windowWidth >= 800) {
+		$("#panel_left").panel("open");
+	}
+});
+$(window).on("throttledresize", function(event) {
+	var panelLeft 		= $("#panel_left");
+	var panelLeftButton	= $("#index_toggle_directory");
+	var windowWidth		= event.target.innerWidth; 
+	
+	var panelLeftDisplay = panelLeft.panel("option", "display");
+	if(windowWidth >= 600) {
+		if(panelLeftDisplay != "push") {
+			panelLeft.panel("option", "display", "push");
+			panelLeft.panel("option", "dismissible", "false");
+		}
+	}
+	else {
+		if(panelLeftDisplay != "overlay") {
+			panelLeft.panel("close");
+			panelLeft.panel("option", "display", "overlay");
+			panelLeft.panel("option", "dismissible", "true");
+		}
+	}
+	
+	if(windowWidth >= 800) {
+		panelLeftButton.hide();	
+		panelLeft.panel("open");
+	}
+	else {
+		panelLeftButton.show()
+	}
+});
+
+$("#page_CELLAR").on("pagecreate", function(event, ui) {
+	$(window).trigger("throttledresize");
+	
+	/* Left Pannel ESC 키 닫기 방지 */
+	$(document).unbind("keyup.panel");
+	$(document).on("keyup.panel", function( e ) {
+		var panelRight = $("#panel_right");
+		if ( e.keyCode === 27 && panelRight.hasClass("ui-panel-open") ) {
+			panelRight.panel("close");
+		}
+	});
+});
+</script>
+{% endblock %}

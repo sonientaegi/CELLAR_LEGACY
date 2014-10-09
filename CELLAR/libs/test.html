@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script type="text/javascript" src="SonienTaegi.js"></script>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+<script type="text/javascript">
+var GAIN	= 10000;
+var nextInteger = function() {
+	return Math.round(Math.random() * GAIN);
+}
+
+var fillArray = function(array) {
+	document.write("Fill array<BR>");
+	for(var i = 0; i < array.length; i++) {
+		array[i] = nextInteger();
+		document.write(array[i]);
+		document.write("&nbsp;");
+	}
+	document.write("<BR>");
+};
+
+var testSort = function(count) {
+	var numbers = Array(count);
+	document.write("SORT " + count + "<BR>");
+	fillArray(numbers);
+	document.write("<BR>");
+	
+	Quicksort.sort(numbers);
+	document.write("Sorted<BR>");
+	var lastValue = 0;
+	var valid = true;
+	for(var i = 0; valid && i < numbers.length; i++) {
+		document.write(numbers[i]);
+		document.write("&nbsp;");
+		
+		if(lastValue > document[i]) {
+			valid = false;
+		}
+		lastValue = document[i];
+	}
+	document.write("<BR>");
+	if(!valid) {
+		document.write("<font style='color : red;'>");
+	}
+	document.write("result : " + valid + "<BR>");
+	if(!valid) {
+		document.write("</font>");
+	}
+	
+	return numbers;
+};
+
+var testBinarySearch = function(numbers, count) {
+	count = count || 1;
+	
+	for(var i = 0; i < count; i++) {
+		var indexSrc = numbers.length - 1;
+		var indexRes = Sonien.binarySearch(numbers, numbers[indexSrc]);
+		
+		if(indexRes == null || indexSrc != indexRes && numbers[indexSrc] != numbers[indexRes]) {
+			document.write("<font style='color : red;'>");
+		}
+		document.write(numbers[indexSrc] + "(" + indexSrc + ") -> ");
+		if(indexRes == null || indexRes < 0) {
+			document.write("Could not find");
+		}
+		else {
+			document.write(numbers[indexRes] + "(" + indexRes + ")");	
+		}
+		
+		if(indexSrc != indexRes) {
+			document.write("</font>");
+		}
+		
+		document.write("<BR>");
+	}
+};
+
+for(var i = 0; i < 1000;  i++) {
+	document.write("<p style='margin : 20px; border-width : 1px; border-style : solid; padding : 10px;'>");
+	var numbers = testSort(Math.round(Math.random() * 1000));
+	document.write("<BR>");
+	testBinarySearch(numbers);
+	document.write("</p>");
+}
+</script>
+</body>
+</html>

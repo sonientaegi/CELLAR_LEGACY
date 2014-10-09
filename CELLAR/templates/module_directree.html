@@ -1,0 +1,56 @@
+{% extends "template.html" %}
+
+{% block body %}
+<script type="text/javascript" src="module_directree.js"></script>
+
+<div data-role="collapsible-set" id="tree-directory">
+</div>
+
+<script type="text/javascript">
+Directree.setOnClickDirectoryListener(Directree.browse);
+
+Directree.instance.treeHelper("create", Directree.render);	
+Directree.instance.treeHelper("evaluator", Directree.evaluator);
+Directree.instance.collapsibleset("option", "inset", false);
+Directree.instance.treeHelper("toggling", false); 				
+Directree.instance.treeHelper("callback", "create", Directree._callbackCreate);
+Directree.instance.treeHelper("callback", "add", 	Directree._callbackAdd);
+Directree.instance.treeHelper("callback", "attach", Directree._callbackAttach);
+Directree.instance.treeHelper("callback", "remove", Directree._callbackRemove);
+Directree.instance.treeHelper("callback", "detach", Directree._callbackDetach);
+Directree.root = Directree.instance.treeHelper("addRoot", ["HOME", "/", []]);
+
+// {% if not is_ajax %}
+$.post("/browse/directory", {
+	target				: '/',
+	csrfmiddlewaretoken : '{{csrf_token}}'
+	},
+	function(data, status) {
+		var jsonResponse = JSON.parse(data);
+		var children = jsonResponse['node'];
+		for(var i = 0; i < children.length; i++) {
+			var childNode = Directree.root.nodeHelper("addChild",children[i]);
+		}
+		Directree._refresh(Directree.root);
+	}
+);
+// {% endif %}
+
+// 컨텍스트 메뉴 등록
+$.contextMenu(Directree.ContextMenu);
+
+// 디렉토리 생성 콜백 등록 
+Transaction.addCallbackCreateDir(Directree._callbackCreateDir);
+
+// 디렉토리 삭제 콜백 등록
+Transaction.addCallbackDeleteDir(Directree._callbackDeleteDir);
+
+// 디렉토리 이동 클백 등록
+Transaction.addCallbackMoveDir(Directree._callbackMoveDir);
+
+// 디렉토리 이름 변경 이벤트 핸들러 등록
+Transaction.addCallbackChangeDirName(Directree._callbackChangeDirName);
+</script>
+
+{% endblock %}
+	

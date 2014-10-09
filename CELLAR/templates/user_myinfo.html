@@ -1,0 +1,121 @@
+{% extends "template.html" %}
+{% block body %}
+<div data-role="page" data-dialog="ture" data-close-btn="none">
+	<div data-role="header" data-theme="a">
+		<h1>정보 수정</h1>
+	</div>
+	<div class="ui-content align_center_flow_vertical">
+		<table>
+			<tr>
+				<td style="width : 5em;">
+					아이디
+				</td>
+				<td>
+					<input id="username" name="username" type="text" size="30" readonly="readonly" value="{{ username }}"/>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					새 암호
+				</td>
+				<td>
+					<input id="password_new" name="password_new" type="password" size="30" placeholder="입력 시 암호가 변경됩니다"/>
+				</td>
+			</tr>
+			<tr id="password_for_check" style="display: none;">
+				<td>
+					기존 암호
+				</td>
+				<td>
+					<input id="password_old" name="password_old" type="password" size="30" placeholder="사용자 확인을 위해 기존 암호를 입력하세요"/>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					이름
+				</td>
+				<td>
+					<input id="name" name="name" type="text" size="30" value="{{ name }}" />
+				</td>
+			</tr>
+			<tr>
+				<td>
+					이메일
+				</td>
+				<td>
+					<input id="email" name="email" type="email" value="{{ email }}"/>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					소개
+				</td>
+				<td>
+					<textarea id="memo" name="memo" rows="5">{{ memo }}</textarea>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2" align="center">
+					<p id="error_message"></p>
+				</td>
+			</tr>
+		</table>
+		<div>
+			<a href="#" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-a" data-rel="back">취소</a>
+       		<a href="#" id="update_user" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-a" data-transition="flow">저장</a>
+		</div>
+	</div>
+	
+	<script type="text/javascript">
+		$("#password_new").on("keyup", function(event) {
+			if($("#password_new").val() != "") {
+				$("#password_for_check").show();
+			}
+			else {
+				$("#password_for_check").hide();
+				$("#password_old").val("");
+			}
+		});
+		
+		$("#update_user").on("click", function() {
+			if($("#password_new").val() != "" && $("#password_old").val() == "") {
+				$("#error_message").html("기존 암호를 입력하세요");
+				return;
+			}
+			
+			$.mobile.loading("show");
+			var params = {
+				csrfmiddlewaretoken : crsf_token,
+				username	: $("#username").val(),
+				name		: $("#name").val(),
+				email		: $("#email").val(),
+				memo		: $("#memo").val(),
+			};
+			
+			var password_new = $("#password_new").val();
+			if(password_new != "") {
+				params["password_new"] = password_new;
+				params["password_old"] = $("#password_old").val();
+			}
+			
+			$.post("/user/update", params,
+				function(data, status) {
+					$.mobile.loading("hide");	
+					
+					if(status != 'success') {
+					 	alert("서버 오류 : " + status);
+						return;
+					}
+					var jsonResponse = JSON.parse(data);
+					if(jsonResponse["code"] == 0) {
+						alert(jsonResponse["message"]);
+						$.mobile.back();
+					}
+					else {
+						$("#error_message").text(jsonResponse["message"]);
+					}
+				});
+		});
+	</script>
+</div>
+{% endblock %}

@@ -131,6 +131,7 @@
 			popupFormText._onSubmit = cbSubmit;
 			popupFormText._instance.css("min-width", "20em");
 			popupFormText._instance.popup("open");
+			setTimeout(function() { $("#popupFormText_name").focus() }, 500);
 		}
 	};
 	(function() {		

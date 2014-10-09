@@ -321,25 +321,25 @@ var Filelist = {
 	ContextMenu_dir : {
 	    selector : '.context_menu_filelist_dir', 
 	    build : function($trigger, e) {
-	    	var items = {
-					// {% if isAdmin %}
-	    			"Seperator"		: "----",
-	    			"auth_read"		: {name: "읽기 권한"},
-	    			"auth_write"	: {name: "쓰기 권한"},
-	    			"auth_delete"	: {name: "삭제 권한"},
-			    	// {% endif %}
-				};
+	    	var contextMenuItems = {};
 	    	
 	    	if(Filelist.writeable) {
-	    		items["rename"] = {name: "이름 변경"};
+	    		contextMenuItems["rename"] = {name: "이름 변경"};
 	    	}
 	    	
 	    	if(Filelist.deletable) {
-	    		items["delete"] = {name: "삭제"};
+	    		contextMenuItems["delete"] = {name: "삭제"};
 	    	}
 	    	
+	    	// {% if isAdmin %} 
+	    	contextMenuItems["Seperator"] 	= "----";
+	    	contextMenuItems["auth_read"] 	= {name: "읽기 권한"};
+	    	contextMenuItems["auth_write"] 	= {name: "쓰기 권한"};
+	    	contextMenuItems["auth_delete"] = {name: "삭제 권한"};
+   			// {% endif %}
+
 			return {
-				items : items,
+				items : contextMenuItems,
 				callback : Filelist._callbackContextMenu_dir
 			}
 	    }

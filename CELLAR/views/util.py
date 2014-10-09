@@ -689,9 +689,9 @@ def userCreate(params, isAdmin = False) :
     if is_group and not isAdmin :
         response["code"]    = -2
         response["message"] = "그룹 사용자는 관리자만이 추가할 수 있습니다."
-    elif not re.match("[a-zA-Z0-9]{6,}|@[a-zA-Z0-9]{5,}", username) :
+    elif not re.match("[a-zA-Z0-9_]{6,}|@[a-zA-Z0-9_]{5,}", username) :
         response["code"]    = -3
-        response["message"] = "ID 는 6글자 이상의 영숫자로 작성해주세요."
+        response["message"] = "ID 는 6글자 이상의 영숫자와 '_' 로 작성해주세요."
     elif is_group and not re.match("@.*", username) :
         response["code"]    = -4
         response["message"] = "그룹 사용자의 아이디는 @로 시작해야합니다."

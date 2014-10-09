@@ -19,9 +19,9 @@ TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'templates')]
 SECRET_KEY = 'PLEASE FILL YOUR OWN SECRET KEY'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-TEMPLATE_DEBUG = True
+TEMPLATE_DEBUG = False
 
 # ALLOWED_HOSTS should be set under production mode.
 # Or it could be ignored with DEBUG = True option : It may take administrator's own risk.

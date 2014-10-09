@@ -363,15 +363,15 @@ var Filelist = {
 				auth_type = 1;
 			}
 			
-//			$( ":mobile-pagecontainer" ).pagecontainer("change", "/auth/manager", { 
-//				type		: "post",
-//				data		: { path 				: data[1][1], 
-//								auth_type 			: auth_type,
-//								csrfmiddlewaretoken : '{{csrf_token}}' },
-//				role		: "dialog",
-//				transition	: "flip",
-//				closeBtn	: "right"
-//			});
+			$( ":mobile-pagecontainer" ).pagecontainer("change", "/auth/manager", { 
+				type		: "post",
+				data		: { path 				: data[1][1], 
+								auth_type 			: auth_type,
+								csrfmiddlewaretoken : '{{csrf_token}}' },
+				role		: "dialog",
+				transition	: "flip",
+				closeBtn	: "right"
+			});
 			break;
 		// {% endif %}
 		case "delete" :

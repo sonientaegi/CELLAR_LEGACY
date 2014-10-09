@@ -288,7 +288,11 @@ var Admin = {
 						}
 						else {
 							target.html(jsonResponse["username"] + "<BR>(" + jsonResponse["name"] + ")" );
-							var selector = "." + jsonResponse["username"] + ".usertype";
+							var classUsername = jsonResponse["username"];
+							if(classUsername[0] == "@") {
+								classUsername = classUsername.slice(1);
+							}
+							var selector = "." + classUsername + ".usertype";
 							var usertype = "";
 							switch(jsonResponse["usertype"]) {
 							case 3:

@@ -5,7 +5,6 @@ var Transaction = {
 	},
 	changeDirName : function(srcPath, dst) {
 		Blocker.acquire();
-		console.log("changeDirName : src=" + srcPath + " dst=" + dst);
 		$.post("/util/rename",
 			{ 
 				csrfmiddlewaretoken : crsf_token, 
@@ -18,7 +17,6 @@ var Transaction = {
 					Transaction._callbackChangeDirName[i](jsonResponse["code"], srcPath, jsonResponse["dst"], jsonResponse["dstPath"]);
 				}
 				
-				console.log("changeDirName : " + jsonResponse["message"]);
 				Blocker.release();
 			}
 		);	
@@ -30,7 +28,6 @@ var Transaction = {
 	},
 	changeFileGroupName : function(srcGroup, srcExts, dst) {
 		Blocker.acquire();
-		console.log("changeFileGroupName : src=" + srcGroup + " dst=" + dst);
 		$.post("/util/renamegroup",
 			{ 
 				csrfmiddlewaretoken : crsf_token, 
@@ -44,7 +41,6 @@ var Transaction = {
 					Transaction._callbackChangeFileGroupName[i](jsonResponse["code"], srcGroup, dst, jsonResponse["dstGroup"]);
 				}
 				
-				console.log("changeDirName : " + jsonResponse["message"]);
 				Blocker.release();
 			}
 		);
@@ -56,7 +52,6 @@ var Transaction = {
 	},
 	moveDir : function(targetDir, dstPath) {
 		Blocker.acquire();
-		console.log("moveDir : target=" + targetDir + " dstPath=" + dstPath);
 		$.post("/util/move",
 			{ 
 				csrfmiddlewaretoken : crsf_token, 
@@ -64,13 +59,13 @@ var Transaction = {
 				dstPath : dstPath
 			},
 			function(data, status) {
+				debugger;
 				var jsonResponse = JSON.parse(data);
 				var result = jsonResponse["result"][0];
 				for(var i = 0; i < Transaction._callbackMoveDir.length; i++) {
 					Transaction._callbackMoveDir[i](result[1], result[0], jsonResponse["dstPath"], result[2]);
 				}
 				
-				console.log("moveDir : " + jsonResponse["message"]);
 				Blocker.release();
 			}
 		);
@@ -82,7 +77,6 @@ var Transaction = {
 	},
 	moveFile : function(targetGroup, targetExts, dstPath) {
 		Blocker.acquire();
-		console.log("moveFile : target=" + targetGroup + "(" + targetExts + ") dstPath=" + dstPath);
 		var targets = [];
 		for(var i = 0 ; i < targetExts.length; i++) {
 			targets.push(targetGroup + targetExts[i]);
@@ -98,7 +92,6 @@ var Transaction = {
 				for(var i = 0; i < Transaction._callbackMoveFile.length; i++) {
 					Transaction._callbackMoveDir[i](jsonResponse["code"], targetGroup, dstPath, jsonResponse["result"]);
 				}
-				console.log("moveFile : " + jsonResponse["message"]);
 				Blocker.release();
 			}
 		);
@@ -110,7 +103,6 @@ var Transaction = {
 	},
 	createDir : function(path, name) {
 		Blocker.acquire();
-		console.log("createDir : " + path + name);
 		$.post("/util/createdir",
 			{ 
 				csrfmiddlewaretoken : crsf_token, 
@@ -123,7 +115,6 @@ var Transaction = {
 				for(var i = 0; i < Transaction._callbackCreateDir.length; i++) {
 					Transaction._callbackCreateDir[i](jsonResponse["code"], path, name, newPath);
 				}
-				console.log("createDir : " + jsonResponse["message"]);
 				Blocker.release();
 			}
 		);
@@ -135,7 +126,6 @@ var Transaction = {
 	},
 	deleteDir : function(dirPath) {
 		Blocker.acquire();
-		console.log("deleteDir : " + dirPath);
 		$.post("/util/deletedir",
 			{ 
 				csrfmiddlewaretoken : crsf_token, 
@@ -146,7 +136,6 @@ var Transaction = {
 				for(var i = 0; i < Transaction._callbackDeleteDir.length; i++) {
 					Transaction._callbackDeleteDir[i](jsonResponse["code"], jsonResponse["dirPath"]);
 				}
-				console.log("deleteDir : " + jsonResponse["message"]);
 				Blocker.release();
 			}
 		);
@@ -158,7 +147,6 @@ var Transaction = {
 	},
 	deleteFiles : function(groupPath, exts) {
 		Blocker.acquire();
-		console.log("deleteFiles : " + groupPath + " (" + exts + ")");
 		$.post("/util/deletefiles",
 			{ 
 				csrfmiddlewaretoken : crsf_token, 
@@ -170,7 +158,6 @@ var Transaction = {
 				for(var i = 0; i < Transaction._callbackDeleteFiles.length; i++) {
 					Transaction._callbackDeleteFiles[i](jsonResponse["code"], jsonResponse["groupPath"], jsonResponse["result"]);
 				}
-				console.log("deleteFiles : " + jsonResponse["message"]);
 				Blocker.release();
 			}
 		);

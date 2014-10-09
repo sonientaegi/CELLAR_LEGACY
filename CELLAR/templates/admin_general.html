@@ -117,13 +117,13 @@ $("#auth_reset").on("click", function(event) {
 					var jsonResponse = JSON.parse(data);			
 					
 					if(status != "success") {
-						console.log(status);
+						alert("서버 오류 : " + status);
 					}
 					else if(jsonResponse['code'] < 0) {
-						console.log(jsonResponse['message']);
+					 	alert(jsonResponse['message']);
 					}
 					else {
-						console.log("권한이 초기화 되었습니다.");
+						alert("권한이 초기화 되었습니다.");
 					}
 					Blocker.release();
 				}

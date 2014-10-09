@@ -178,8 +178,6 @@ var TreeHelper = {
  */
 var NodeHelper = {
 	create : function(tree, data) {
-		// console.log("노드 생성 : " + data[0]);
-		
 		var templator 	= tree.data("sonienTemplate");
 		var node 		= $("<div data-role='collapsible'></div>");
 		var title 		= templator.apply(node, data);
@@ -222,8 +220,6 @@ var NodeHelper = {
 	},
 	
 	addChild : function(node, data) {
-		// console.log("노드 추가 : " + data[0]);
-		
 		var tree 		= node.data("sonienTree");
 		var child 		= null;
 		
@@ -342,7 +338,6 @@ var NodeHelper = {
 	
 	hasChild : function(node) {
 		var data = WidgetHelper.getData(node);
-		console.log("hasChild " + data[2]);
 		return data[2].length > 0;
 	},
 	

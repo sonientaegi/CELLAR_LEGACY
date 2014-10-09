@@ -113,7 +113,6 @@ var Filelist = {
 		}
 		Filelist.instance.tableHelper("auto-sort", true);
 		
-		console.log("Filelist.browse CWD=" + dir);
 		Filelist.cwd = dir;
 		Filelist.readable 	= jsonResponse["readable"];
 		Filelist.writeable	= jsonResponse["writeable"];
@@ -202,7 +201,6 @@ var Filelist = {
 		Filelist._callbackClickExt = cb;
 	},
 	onClickExt : function(targetFile) {
-		console.log("onClickExt : " + targetFile[1]);
 		if (Filelist._callbackClickExt != null) {
 			Filelist._callbackClickExt(targetFile[0], targetFile[1], targetFile[2]);
 		}
@@ -216,7 +214,6 @@ var Filelist = {
 	
 	// Row 생성 시 콜백 정의 
 	_callbackCreateRow : function(row, data, table) {
-		// console.log(data);
 		if(data[0] == 1) {
 			row.addClass("context_menu_filelist_file");
 		}
@@ -244,12 +241,6 @@ var Filelist = {
 			data[1][1] = dstPath;
 			
 			Filelist.instance.tableHelper("sort");
-			/*
-			var records = WidgetHelper.getData(Filelist.instance);
-			for(var i = 0; i < records.length; i++) {
-				console.log(records[i]);
-			}
-			*/
 		}
 		else {
 			row.find("#dirname").first().text(data[1][0]);
@@ -267,7 +258,6 @@ var Filelist = {
 				var exts = row.find("#exts > a").toArray();
 				for(var i = 0; i < exts.length; i++) {
 					var elem = $(exts[i]);
-					console.log(elem.attr("href"));
 					elem.attr("href", "/download" + dstGroup + elem.data("ext"));
 				}
 				Filelist.instance.tableHelper("sort");
@@ -283,7 +273,6 @@ var Filelist = {
 			return;
 		}
 		
-		console.log("Filelist._callbackMoveDir " + dstPath + " vs " + Filelist.cwd);
 		if(dstPath == Filelist.cwd) {
 			var dirName = newPath.slice(dstPath.length, newPath.length - 1);
 			var data = [0, [dirName, newPath]];
@@ -308,7 +297,6 @@ var Filelist = {
 			return;
 		}
 		
-		console.log("Filelist._callbackCreateDir " + newPath + " " + newPath.length);
 		if(parentPath == Filelist.cwd) {
 			Filelist.add([0, [dirName, newPath]]);
 		}
@@ -319,7 +307,6 @@ var Filelist = {
 			return;
 		}
 		
-		console.log("Filelist._callbackDeleteDir " + targetPath);
 		Filelist.del(targetPath);
 	},
 	
@@ -328,7 +315,6 @@ var Filelist = {
 			return;
 		}
 		
-		console.log("Filelist._callbackDeleteFiles " + groupPath + "(" + exts + ")");
 		Filelist.del(groupPath, exts);
 	},
 	
@@ -361,7 +347,6 @@ var Filelist = {
 	
 	_callbackContextMenu_dir : function(key, options) {
 		var data = WidgetHelper.getData(this);
-		console.log("ContextMenu " + key + " on " + data[1][1]); 
 		switch(key) {
 		// {% if isAdmin %}
 		case "auth_read" 	:
@@ -436,7 +421,6 @@ var Filelist = {
 	
 	_callbackContextMenu_file : function(key, options) {
 		var data = WidgetHelper.getData(this);
-		console.log("ContextMenu " + key + " on " + data[1][1]); 
 		switch(key) {
 		case "delete" :
 			popupYesNo.modal(

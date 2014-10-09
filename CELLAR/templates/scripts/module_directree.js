@@ -200,7 +200,6 @@ var Directree = {
 		});
 		
 		header.on("drop", function(event) {
-			console.log("drop");
 			if(Directree._onDrop != null) {
 				Directree._onDrop(event, node);
 			}

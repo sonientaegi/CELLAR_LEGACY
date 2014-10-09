@@ -39,8 +39,8 @@
 			{% if isAdmin %}
 			<li data-icon="gear"><a href="/administrator" id="panel_right_setting" data-ajax="false">자료실 설정</a></li>
 			{% endif %}
-		    <li data-icon="edit"><a onclick="javascript:CELLAR.popupCreateDir()" id="panel_right_newdir">새 폴더</a></li>
-			<li data-icon="arrow-u"><a onclick="javascript:CELLAR.popupUpload()" id="panel_right_upload">업로드</a></li>
+		    <li data-icon="edit"><a onclick="javascript:CELLAR.popupNewDirectory()" id="panel_right_newdir">새 폴더</a></li>
+			<li data-icon="arrow-u"><a onclick="javascript:CELLAR.popupUploader()" id="panel_right_upload">업로드</a></li>
 			<li data-icon="arrow-d"><a onclick="javascript:CELLAR.dump_cwd()">한꺼번에 다운</a></li>
 		</ul>
 		
@@ -81,7 +81,6 @@ $( window ).on( "navigate", function( event, data ) {
 	}
 });
 
-// console.log("CELLAR.Filelist - Start loading");
 $("#content_filelist").load(
 	"/module/filelist", 
 	function(response, status, xhr) {
@@ -93,24 +92,23 @@ $("#content_filelist").load(
 			CELLAR.initial_browse();
 		}
 		else {
-			console.log("CELLAR.Filelist - " + xhr.status + " " + xhr.statusText  );
+			alert("서버 오류 : " + xhr.status + " " + xhr.statusText  );
 		}
 	});
 
-// console.log("CELLAR.Directree - Start loading");
 $("#content_directory").load(
 	"/module/directree", 
 	function(response, status, xhr) {
 		if(status == "success") {
 			Directree.setOnClickDirectoryListener(CELLAR.browse);
 			Directree.setOnDragStartListener(CELLAR.dragStart_directree);
-			Directree.setOnDropListener(CELLAR.drop_on_directree);
+			Directree.setOnDropListener(CELLAR.dropOn_directree);
 			
 			CELLAR.isDirectreeLoaded = true;
 			CELLAR.initial_browse();
 		}
 		else {
-			console.log("CELLAR.Directree - " + xhr.status + " " + xhr.statusText  );
+			alert("서버 오류 : " + xhr.status + " " + xhr.statusText  );
 		}
 	});
 
@@ -128,7 +126,6 @@ $(window).on("throttledresize", function(event) {
 	var windowWidth		= event.target.innerWidth; 
 	
 	var panelLeftDisplay = panelLeft.panel("option", "display");
-	console.log("display : " + panelLeftDisplay);
 	if(windowWidth >= 600) {
 		if(panelLeftDisplay != "push") {
 			panelLeft.panel("option", "display", "push");
@@ -150,7 +147,6 @@ $(window).on("throttledresize", function(event) {
 	else {
 		panelLeftButton.show()
 	}
-	console.log("너비 " + windowWidth);
 });
 
 $("#page_CELLAR").on("pagecreate", function(event, ui) {

@@ -103,7 +103,7 @@
 					$.mobile.loading("hide");	
 					
 					if(status != 'success') {
-						console.log("Browsing failed.");
+					 	alert("서버 오류 : " + status);
 						return;
 					}
 					var jsonResponse = JSON.parse(data);

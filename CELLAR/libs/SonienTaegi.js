@@ -12,9 +12,6 @@ var Sonien = {
 				.floor((stopIndex + startIndex) / 2), middleValue = evaluator(array[middle]);
 
 		while (middleValue != value && startIndex < stopIndex) {
-			// window.console && console.log("[BinarySearch] " + middleValue + "
-			// != " + value);
-
 			// adjust search area
 			if (value < middleValue) {
 				if((stopIndex = middle - 1) < 0) {
@@ -31,9 +28,6 @@ var Sonien = {
 			middle = Math.floor((stopIndex + startIndex) / 2);
 			middleValue = evaluator(array[middle]);
 		}
-		// window.console && console.log("[BinarySearch] " + middleValue + " vs
-		// " + value + " = " + (middleValue != value) ? -1 : middle);
-		// make sure it's the right value
 		return (middleValue != value) ? -1 : middle;
 	},
 

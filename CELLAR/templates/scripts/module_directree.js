@@ -81,13 +81,12 @@ var Directree = {
 			if(key == "auth_read") {
 				auth_type = 4
 			}
-			if(key == "auth_write") {
+			else if(key == "auth_write") {
 				auth_type = 2;
 			}
 			else if(key == "auth_delete") {
 				auth_type = 1;
 			}
-			
 			$( ":mobile-pagecontainer" ).pagecontainer("change", "/auth/manager", { 
 				type		: "post",
 				data		: { path 				: data[0][1], 

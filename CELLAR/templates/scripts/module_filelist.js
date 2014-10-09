@@ -356,22 +356,22 @@ var Filelist = {
 			if(key == "auth_read") {
 				auth_type = 4
 			}
-			if(key == "auth_write") {
+			else if(key == "auth_write") {
 				auth_type = 2;
 			}
 			else if(key == "auth_delete") {
 				auth_type = 1;
 			}
 			
-			$( ":mobile-pagecontainer" ).pagecontainer("change", "/auth/manager", { 
-				type		: "post",
-				data		: { path 				: data[1][1], 
-								auth_type 			: auth_type,
-								csrfmiddlewaretoken : '{{csrf_token}}' },
-				role		: "dialog",
-				transition	: "flip",
-				closeBtn	: "right"
-			});
+//			$( ":mobile-pagecontainer" ).pagecontainer("change", "/auth/manager", { 
+//				type		: "post",
+//				data		: { path 				: data[1][1], 
+//								auth_type 			: auth_type,
+//								csrfmiddlewaretoken : '{{csrf_token}}' },
+//				role		: "dialog",
+//				transition	: "flip",
+//				closeBtn	: "right"
+//			});
 			break;
 		// {% endif %}
 		case "delete" :

@@ -13,6 +13,7 @@ from django.shortcuts           import render, redirect
 from CELLAR                     import config
 from CELLAR.models              import UserInfo
 from CELLAR.views.util          import userCreate
+from SonienStudio import log
 from SonienStudio.log           import error
 
 
@@ -86,4 +87,6 @@ def authorityManager(request, *args, **kwargs) :
     else :
         auth_type = 4 
      
-    return HttpResponse(render(request, "auth_manager.html", {'cwd' : cwd, 'auth_type' : auth_type}))    
+    response = render(request, "auth_manager.html", {'cwd' : cwd, 'auth_type' : auth_type})
+    log.info(response.content)
+    return HttpResponse(response)    

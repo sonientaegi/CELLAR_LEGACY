@@ -143,7 +143,7 @@
 					if(status != "success") {
 						alert("서버 오류 : " + status );
 					}
-					else if(jsonResponse['code'] != 0) 
+					else if(jsonResponse['code'] != 0) { 
 						alert(jsonResponse['message']);
 					}
 					else {
@@ -265,7 +265,7 @@
 		}	
 	};
 	
-	(function($) {		
+	(function($) {	
 		AuthManager.userlist.tableHelper("create", AuthManager.render);
 		AuthManager.userlist.tableHelper("evaluator", AuthManager.evaluator);
 		AuthManager.userlist.tableHelper("auto-sort", true);
@@ -279,28 +279,29 @@
 		$(".authManager_type").text(AuthManager.type_desc[AuthManager.type / 2]);	
 		
 		$.post(
-				"/auth/default/get",
-				{
-					csrfmiddlewaretoken : '{{csrf_token}}', 
-					path 	: AuthManager.cwd
-				},
-				function(data, status) {
-					var jsonResponse = JSON.parse(data);
-					
-					if(status != "success") {
-						alert("서버 오류 : " + status);
-					}
-					else {
-						AuthManager.setDefault(
-							jsonResponse["readable"],
-							jsonResponse["writeable"],
-							jsonResponse["deletable"],
-							jsonResponse["inherit"],
-							jsonResponse["register"]
-						);
-					}
-					return true;
-				});
+			"/auth/default/get",
+			{
+				csrfmiddlewaretoken : '{{csrf_token}}', 
+				path 	: AuthManager.cwd
+			},
+			function(data, status) {
+				var jsonResponse = JSON.parse(data);
+				
+				if(status != "success") {
+					alert("서버 오류 : " + status);
+				}
+				else {
+					AuthManager.setDefault(
+						jsonResponse["readable"],
+						jsonResponse["writeable"],
+						jsonResponse["deletable"],
+						jsonResponse["inherit"],
+						jsonResponse["register"]
+					);
+				}
+				return true;
+			}
+		);
 		$.post(
 			"/auth/user/get",
 			{

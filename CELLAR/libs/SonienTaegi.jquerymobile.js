@@ -390,7 +390,6 @@ var NodeHelper = {
 	},
 	
 	_attach : function(parentNode, node) {		
-		// debugger;
 		node.appendTo(parentNode.data("sonienChildren"));
 		var parentData 	= WidgetHelper.getData(parentNode);
 		var nodeData	= WidgetHelper.getData(node);

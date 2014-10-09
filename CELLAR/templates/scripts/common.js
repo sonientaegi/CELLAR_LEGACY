@@ -59,13 +59,11 @@ var Transaction = {
 				dstPath : dstPath
 			},
 			function(data, status) {
-				debugger;
 				var jsonResponse = JSON.parse(data);
 				var result = jsonResponse["result"][0];
 				for(var i = 0; i < Transaction._callbackMoveDir.length; i++) {
 					Transaction._callbackMoveDir[i](result[1], result[0], jsonResponse["dstPath"], result[2]);
 				}
-				
 				Blocker.release();
 			}
 		);

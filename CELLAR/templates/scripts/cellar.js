@@ -92,13 +92,21 @@ var CELLAR = {
 	
 	dragStart_filelist : function(event, row) {
 		var data = WidgetHelper.getData(row);
-		var exts = [];
-		if(data[0] == 1) {
+		var target = null;
+		
+		switch(data[0]) {
+		case 0 :
+			target = [data[0], data[1][1], []];
+			break;
+		case 1 :
+			var exts = [];
 			data[1][2].forEach(function(extData) {
 				exts.push(extData[0]);
-			});	
+			});
+			target = [data[0], data[1][1].slice(0, data[1][1].length - data[1][0].length), data[1][0], exts];
+			break;
 		}
-		var target = [data[0], data[1][1].slice(0, data[1][1].length - data[1][0].length), data[1][0], exts];
+		
 		event.originalEvent.dataTransfer.setData("text", JSON.stringify(target));
 	},
 	

@@ -16,13 +16,15 @@ TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'templates')]
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '@#t&^0+)%cg-6*#^vey3&74e_bobd82v9cczkngtpixz-bnz%e'
+SECRET_KEY = 'PLEASE FILL YOUR OWN SECRET KEY'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-TEMPLATE_DEBUG = True
+TEMPLATE_DEBUG = False
 
+# ALLOWED_HOSTS should be set under production mode.
+# Or it could be ignored with DEBUG = True option : It may take administrator's own risk.
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", ]
 
 
@@ -75,7 +77,7 @@ USE_L10N = True
 
 USE_TZ = True
 
-FILE_UPLOAD_MAX_MEMORY_SIZE = 50000000
+FILE_UPLOAD_MAX_MEMORY_SIZE = 1048576 # FILE_UPLOAD_MAX_MEMORY_SIZE is not important. Because CELLAR is using chunk upload.
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/

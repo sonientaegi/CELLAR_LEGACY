@@ -8,7 +8,7 @@
 	<div class="ui-content">
 		<form class="align_center_flow_vertical" method="post" action="/user/login" data-ajax="false">{% csrf_token %}
 			<input name="user.login" value="true" type="hidden" />
-			{% if user_login.redirectURL %}
+			{% if userLogin.redirectURL %}
 				<input type="hidden" name="redirectURL" id="redirectURL" value="{{ userLogin.redirectURL | default:'/' }}">
 			{% endif %}
 			<input type="hidden" name="isReady" value="true">

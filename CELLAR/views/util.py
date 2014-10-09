@@ -861,8 +861,9 @@ def userLogin(request, *args, **kwargs):
     if request.POST.get("user.login") :
         username = request.POST.get('username')
         password = request.POST.get("password")
+        
         redirectURL = request.POST.get("redirectURL", "cellar")
-           
+        
         if username and password :
             user = authenticate(username=username, password=password)
             if user is not None and user.is_active :
